@@ -1,0 +1,40 @@
+GITHUB PAGES — SÅ HÄR PUBLICERAR DU (en gång, ca 15 min)
+=========================================================
+
+1. Skapa konto: github.com → "Sign up" (gratis).
+
+2. Skapa ett arkiv (repository):
+   - Klicka på "+" uppe till höger → "New repository"
+   - Namn: kemi   (eller vad du vill — blir en del av adressen)
+   - Välj "Public"
+   - Klicka "Create repository"
+
+3. Ladda upp filerna:
+   - Klicka "uploading an existing file" (eller Add file → Upload files)
+   - Dra in ALLA fyra filerna från den här mappen:
+       index.html
+       moltranaren-ke01.html
+       stokiometritranaren-ke04.html
+       LASMIG.txt   (valfri — kan utelämnas)
+   - Klicka "Commit changes"
+
+4. Slå på Pages:
+   - Settings → Pages (i vänstermenyn)
+   - Under "Branch": välj "main" och "/ (root)" → Save
+
+5. Vänta 1–2 minuter. Din sida finns nu på:
+   https://DITTANVÄNDARNAMN.github.io/kemi/
+   (adressen visas överst på Pages-sidan)
+
+6. Dela adressen i Wilma/Teams — studerandena behöver ingen inloggning.
+
+UPPDATERA ETT VERKTYG SENARE
+----------------------------
+Ladda upp den nya filen med SAMMA filnamn (Add file → Upload files)
+→ den gamla ersätts, adressen ändras inte.
+
+VIKTIGT
+-------
+- Allt i arkivet är OFFENTLIGT. Ladda ALDRIG upp facitversioner,
+  provunderlag eller något med studerandenamn.
+- Statiska sidor utan inloggning = inga personuppgifter hanteras.

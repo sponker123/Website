@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stökiometritränaren — KE04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F8F6;
+    --grid:#E2EAE4;
+    --grid-major:#D3DFD6;
+    --ink:#17241E;
+    --ink-soft:#4C5B53;
+    --accent:#0B6E5F;
+    --accent-soft:#E3F1ED;
+    --amber:#B25A0B;
+    --amber-soft:#FBEFE0;
+    --green:#1D7A33;
+    --green-soft:#E4F3E6;
+    --red:#A8332C;
+    --red-soft:#F8E7E5;
+    --card:#FFFFFF;
+    --line:#C9D4CC;
+    --radius:10px;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --sans:'IBM Plex Sans',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background-color:var(--paper);
+    background-image:
+      linear-gradient(var(--grid-major) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size:100px 100px,100px 100px,20px 20px,20px 20px;
+    min-height:100vh;
+    padding:24px 16px 64px;
+    line-height:1.5;
+  }
+  .wrap{max-width:840px;margin:0 auto}
+
+  header{margin-bottom:20px}
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent);font-weight:600;
+  }
+  h1{font-size:clamp(26px,5vw,36px);font-weight:700;letter-spacing:-.01em;line-height:1.15}
+  .sub{color:var(--ink-soft);font-size:15px;margin-top:4px}
+
+  .panel{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:16px;margin-bottom:14px;
+    box-shadow:0 1px 3px rgba(23,36,30,.06);
+  }
+  .controls{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between}
+  .ctrl-group{display:flex;flex-direction:column;gap:6px}
+  .ctrl-label{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{
+    font-family:var(--sans);font-size:14px;font-weight:500;
+    padding:7px 13px;border-radius:999px;border:1.5px solid var(--line);
+    background:var(--card);color:var(--ink);cursor:pointer;transition:all .12s;
+  }
+  .chip:hover{border-color:var(--accent)}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .chip:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .scorebar{
+    display:flex;gap:20px;align-items:center;flex-wrap:wrap;
+    font-family:var(--mono);font-size:14px;color:var(--ink-soft);
+  }
+  .scorebar b{color:var(--ink);font-weight:600}
+  .streak{color:var(--amber);font-weight:600}
+
+  .qtype-tag{
+    display:inline-block;font-family:var(--mono);font-size:12px;font-weight:600;
+    color:var(--accent);background:var(--accent-soft);
+    padding:3px 10px;border-radius:6px;margin-bottom:10px;letter-spacing:.04em;
+  }
+  .review-tag{background:var(--amber-soft);color:var(--amber)}
+  .equation{
+    font-family:var(--mono);font-size:clamp(16px,3.5vw,20px);font-weight:600;
+    background:var(--accent-soft);border-left:4px solid var(--accent);
+    padding:12px 16px;border-radius:0 8px 8px 0;margin:10px 0 14px;
+    overflow-x:auto;white-space:nowrap;
+  }
+  .equation sub{font-size:.68em}
+  .qtext{font-size:16px;margin-bottom:8px}
+  .qtext b{font-weight:600}
+  .given{
+    font-family:var(--mono);font-size:14px;color:var(--ink-soft);
+    margin:10px 0;display:flex;flex-direction:column;gap:3px;
+  }
+  .given sub{font-size:.7em}
+  .atommass{
+    font-family:var(--mono);font-size:13px;color:var(--ink-soft);
+    background:var(--paper);border:1px dashed var(--line);border-radius:8px;
+    padding:8px 12px;margin-top:10px;
+  }
+  .atommass em{font-style:normal;font-weight:600;color:var(--ink)}
+
+  .answer-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+  .answer-field{position:relative;display:flex;align-items:center}
+  input[type=text]{
+    font-family:var(--mono);font-size:17px;font-weight:500;
+    padding:10px 14px;border:1.5px solid var(--line);border-radius:8px;
+    width:170px;color:var(--ink);background:var(--card);
+  }
+  input[type=text]:focus{border-color:var(--accent)}
+  input[type=text][readonly]{background:var(--paper);color:var(--ink-soft)}
+  .unit{font-family:var(--mono);font-size:15px;color:var(--ink-soft);margin-left:8px;font-weight:500}
+  button{
+    font-family:var(--sans);font-size:15px;font-weight:600;
+    padding:10px 18px;border-radius:8px;cursor:pointer;border:1.5px solid transparent;
+    transition:all .12s;
+  }
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:#095C50}
+  .btn-ghost{background:var(--card);border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+  .feedback{margin-top:12px;padding:12px 14px;border-radius:8px;font-size:15px;display:none;font-weight:500}
+  .feedback.ok{display:block;background:var(--green-soft);color:var(--green);border:1px solid #BFE3C4}
+  .feedback.warn{display:block;background:var(--amber-soft);color:var(--amber);border:1px solid #F0D6B4}
+  .feedback.fel{display:block;background:var(--red-soft);color:var(--red);border:1px solid #EBC4C0}
+
+  .solution{margin-top:14px;display:none}
+  .solution.open{display:block}
+  .sol-head{
+    font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink-soft);margin-bottom:4px;
+  }
+  .sol-note{font-size:13px;color:var(--ink-soft);margin-bottom:10px;font-style:italic}
+  .step{
+    background:var(--paper);border:1px solid var(--line);border-radius:8px;
+    padding:10px 14px;margin-bottom:8px;font-size:15px;
+    display:flex;gap:12px;align-items:baseline;
+  }
+  .step .n{
+    font-family:var(--mono);font-weight:600;color:var(--accent);
+    font-size:13px;flex-shrink:0;
+  }
+  .step .t{flex:1}
+  .step .t .m{font-family:var(--mono);font-size:14px;display:block;margin-top:3px;color:var(--ink);overflow-x:auto}
+  .step sub{font-size:.7em}
+
+  .hist-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px}
+  .hist-note{font-size:12px;color:var(--ink-soft);font-family:var(--mono)}
+  .hist-list{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+  .hist-item{
+    display:flex;gap:10px;align-items:baseline;text-align:left;
+    font-family:var(--sans);font-size:14px;font-weight:400;
+    background:var(--paper);border:1px solid var(--line);border-radius:8px;
+    padding:9px 12px;cursor:pointer;width:100%;
+  }
+  .hist-item:hover{border-color:var(--accent)}
+  .hist-item .hn{font-family:var(--mono);font-weight:600;color:var(--ink-soft);font-size:12px;flex-shrink:0}
+  .hist-item .ht{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hist-item .hs{font-family:var(--mono);font-size:12px;font-weight:600;flex-shrink:0}
+  .hs.s-ok{color:var(--green)} .hs.s-warn{color:var(--amber)} .hs.s-fel{color:var(--red)} .hs.s-reveal{color:var(--ink-soft)}
+
+  footer{
+    margin-top:24px;font-size:13px;color:var(--ink-soft);text-align:center;
+    font-family:var(--mono);line-height:1.7;
+  }
+  @media (max-width:560px){
+    body{padding:16px 10px 48px}
+    .panel{padding:13px}
+    input[type=text]{width:130px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">KE04 · Kemisk reaktion · GLP2019</div>
+    <h1>Stökiometritränaren</h1>
+    <div class="sub">Slumpade räkneuppgifter med stegvisa lösningar. Decimalkomma eller punkt går lika bra. Avrunda endast slutsvaret.</div>
+  </header>
+
+  <div class="panel">
+    <div class="controls">
+      <div class="ctrl-group">
+        <span class="ctrl-label">Uppgiftstyp</span>
+        <div class="chips" id="typeChips" role="group" aria-label="Uppgiftstyp"></div>
+      </div>
+      <div class="ctrl-group">
+        <span class="ctrl-label">Svårighetsgrad</span>
+        <div class="chips" id="diffChips" role="group" aria-label="Svårighetsgrad"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="scorebar">
+      <span>Rätt: <b id="scoreOk">0</b> / <b id="scoreTot">0</b></span>
+      <span class="streak" id="streak"></span>
+    </div>
+  </div>
+
+  <div class="panel" id="problemPanel">
+    <span class="qtype-tag" id="qtag"></span>
+    <div class="equation" id="equation"></div>
+    <div class="qtext" id="qtext"></div>
+    <div class="given" id="given"></div>
+    <div class="atommass" id="atommass" style="display:none"></div>
+
+    <div class="answer-row">
+      <div class="answer-field">
+        <input type="text" id="answer" inputmode="decimal" autocomplete="off" aria-label="Ditt svar">
+        <span class="unit" id="unit"></span>
+      </div>
+      <button class="btn-primary" id="checkBtn">Kontrollera</button>
+      <button class="btn-ghost" id="solBtn">Visa lösning</button>
+      <button class="btn-ghost" id="nextBtn">Ny uppgift →</button>
+      <button class="btn-primary" id="backBtn" style="display:none">← Fortsätt träna</button>
+    </div>
+
+    <div class="feedback" id="feedback" role="status"></div>
+
+    <div class="solution" id="solution">
+      <div class="sol-head">Lösning steg för steg</div>
+      <div class="sol-note">Mellanvärden visas avrundade i presentationen, men alla beräkningar görs med fulla värden. Avrunda själv först i slutsvaret.</div>
+      <div id="steps"></div>
+      <button class="btn-ghost" id="stepBtn" style="margin-top:4px">Visa nästa steg</button>
+    </div>
+  </div>
+
+  <div class="panel" id="histPanel" style="display:none">
+    <div class="hist-head">
+      <span class="ctrl-label">Historik</span>
+      <span class="hist-note">rensas när sidan laddas om</span>
+    </div>
+    <div class="hist-list" id="histList"></div>
+  </div>
+
+  <footer>
+    Svaret anges med lika många gällande siffror som det minst noggranna mätvärdet i uppgiften.<br>
+    Atommassor enligt tabellbok · V<sub>m</sub>(gas) = 24,0 dm³/mol vid 25 °C
+  </footer>
+</div>
+
+<script>
+'use strict';
+/* ================================================================
+   LOGIK — ren och testbar (körs även i Node av testsviten)
+   ================================================================ */
+
+/* Atommassor exakt enligt det periodiska systemet (tabellbok) */
+const ATOMIC_STR = {
+  H:'1,008', C:'12,01', N:'14,01', O:'16,00', Na:'22,99', Mg:'24,31',
+  Al:'26,98', P:'30,97', S:'32,06', Cl:'35,45', K:'39,10', Ca:'40,08',
+  Mn:'54,94', Fe:'55,85', Cu:'63,55', Zn:'65,38', Ag:'107,87',
+  Ba:'137,33', I:'126,90'
+};
+const ATOMIC = {};
+for(const el in ATOMIC_STR) ATOMIC[el] = parseFloat(ATOMIC_STR[el].replace(',','.'));
+
+const NAMES = {
+  H2:'väte',O2:'syre',N2:'kväve',Cl2:'klor',H2O:'vatten',NH3:'ammoniak',CO2:'koldioxid',
+  CH4:'metan',MgO:'magnesiumoxid',Mg:'magnesium',Fe2O3:'järn(III)oxid',CO:'kolmonoxid',Fe:'järn',
+  Al:'aluminium',AlCl3:'aluminiumklorid',CaCO3:'kalciumkarbonat',CaO:'kalciumoxid',Na:'natrium',
+  NaCl:'natriumklorid',Zn:'zink',HCl:'väteklorid',ZnCl2:'zinkklorid',KClO3:'kaliumklorat',KCl:'kaliumklorid',
+  C2H5OH:'etanol',CuO:'koppar(II)oxid',Cu:'koppar',C:'kol',
+  AgNO3:'silvernitrat',NaOH:'natriumhydroxid',KMnO4:'kaliumpermanganat',
+  Na2CO3:'natriumkarbonat',CuSO4:'koppar(II)sulfat',KI:'kaliumjodid',BaCl2:'bariumklorid',
+  C6H12O6:'glukos',NaHCO3:'natriumvätekarbonat'
+};
+
+/* Reaktionsbank. gasProd = index i p för gasformig produkt (volymuppgifter) */
+const REACTIONS = [
+  {r:[[2,'H2'],[1,'O2']], p:[[2,'H2O']]},
+  {r:[[1,'N2'],[3,'H2']], p:[[2,'NH3']], gasProd:0},
+  {r:[[1,'CH4'],[2,'O2']], p:[[1,'CO2'],[2,'H2O']], gasProd:0},
+  {r:[[2,'Mg'],[1,'O2']], p:[[2,'MgO']]},
+  {r:[[1,'Fe2O3'],[3,'CO']], p:[[2,'Fe'],[3,'CO2']], gasProd:1},
+  {r:[[2,'Al'],[3,'Cl2']], p:[[2,'AlCl3']]},
+  {r:[[1,'CaCO3']], p:[[1,'CaO'],[1,'CO2']], gasProd:1},
+  {r:[[2,'Na'],[1,'Cl2']], p:[[2,'NaCl']]},
+  {r:[[1,'Zn'],[2,'HCl']], p:[[1,'ZnCl2'],[1,'H2']], gasProd:1},
+  {r:[[2,'KClO3']], p:[[2,'KCl'],[3,'O2']], gasProd:1},
+  {r:[[1,'C2H5OH'],[3,'O2']], p:[[2,'CO2'],[3,'H2O']], gasProd:0},
+  {r:[[2,'CuO'],[1,'C']], p:[[2,'Cu'],[1,'CO2']], gasProd:1},
+];
+
+const SOLUTES = ['NaCl','NaOH','CuSO4','KMnO4','Na2CO3','KI','AgNO3','BaCl2','C6H12O6','NaHCO3'];
+
+/* ---------- kemihjälpare ---------- */
+function parseFormula(f){
+  const out = {};
+  function add(o,el,n){ o[el]=(o[el]||0)+n; }
+  let i=0;
+  function block(target){
+    while(i<f.length){
+      const ch=f[i];
+      if(ch==='('){
+        i++;
+        const inner={};
+        block(inner);
+        let num=''; while(i<f.length && /\d/.test(f[i])) num+=f[i++];
+        const m=num?+num:1;
+        for(const k in inner) add(target,k,inner[k]*m);
+      } else if(ch===')'){ i++; return; }
+      else{
+        let el=ch; i++;
+        if(i<f.length && /[a-z]/.test(f[i])) el+=f[i++];
+        let num=''; while(i<f.length && /\d/.test(f[i])) num+=f[i++];
+        add(target,el,num?+num:1);
+      }
+    }
+  }
+  block(out);
+  return out;
+}
+function molarMass(f){
+  const comp = parseFormula(f);
+  let M=0;
+  for(const el in comp){
+    if(!(el in ATOMIC)) throw new Error('Okänd atommassa: '+el+' i '+f);
+    M += ATOMIC[el]*comp[el];
+  }
+  return M;
+}
+function elementsOf(formulas){
+  const s=new Set();
+  formulas.forEach(f=>Object.keys(parseFormula(f)).forEach(e=>s.add(e)));
+  return [...s];
+}
+function isBalanced(rx){
+  const sum = side => {
+    const t={};
+    side.forEach(([c,f])=>{
+      const comp=parseFormula(f);
+      for(const el in comp) t[el]=(t[el]||0)+c*comp[el];
+    });
+    return t;
+  };
+  const L=sum(rx.r), R=sum(rx.p);
+  const els=new Set([...Object.keys(L),...Object.keys(R)]);
+  for(const el of els) if((L[el]||0)!==(R[el]||0)) return false;
+  return true;
+}
+
+/* ---------- gällande siffror ---------- */
+function countSF(str){
+  let s = String(str).trim().replace(/\s/g,'').replace(',','.').replace(/^[-+]/,'');
+  if(!/^\d+(\.\d*)?$|^\.\d+$/.test(s)) return null;
+  const hasDot = s.includes('.');
+  const digits = s.replace('.','').replace(/^0+/,'');
+  if(digits.length===0) return {min:1,max:1};
+  if(hasDot) return {min:digits.length,max:digits.length};
+  const noTrail = digits.replace(/0+$/,'');
+  return {min:Math.max(1,noTrail.length),max:digits.length};
+}
+function roundSig(x,n){ return parseFloat(Number(x).toPrecision(n)); }
+function fmtSig(x,n){
+  if(!isFinite(x)) return String(x);
+  let s = Number(x).toPrecision(n);
+  if(s.includes('e')||s.includes('E')){
+    const num=parseFloat(s);
+    const exp=Math.floor(Math.log10(Math.abs(num)));
+    const dec=Math.max(0,n-1-exp);
+    s=num.toFixed(dec);
+  }
+  return s.replace('.',',');
+}
+/* visning av mellanvärden (ej svarsavrundning) */
+function fmt(x,sig=4){
+  if(x===0) return '0';
+  const d = Math.max(0, sig - 1 - Math.floor(Math.log10(Math.abs(x))));
+  let s = x.toFixed(Math.min(d,7));
+  if(s.includes('.')) s = s.replace(/0+$/,'').replace(/\.$/,'');
+  return s.replace('.',',');
+}
+function fmtM(x){ return fmt(x,4); }
+function mkVal(str){
+  return {str, v:parseFloat(str.replace(',','.')), sf:countSF(str).min};
+}
+
+/* ---------- svarsbedömning ---------- */
+function parseNum(s){
+  s = String(s).trim().replace(/\s/g,'').replace(',','.');
+  if(!s || isNaN(+s)) return null;
+  return +s;
+}
+function evaluate(userStr, exact, sf){
+  const v = parseNum(userStr);
+  if(v===null) return {status:'invalid'};
+  const rounded = roundSig(exact, sf);
+  const eq = (a,b)=> Math.abs(a-b) <= Math.abs(b)*1e-9 + 1e-12;
+  const range = countSF(userStr.trim().replace(/\s/g,'').replace(/^[-+]/,''));
+  if(eq(v, rounded)){
+    if(range && range.min<=sf && sf<=range.max) return {status:'ok', rounded};
+    return {status:'warn', reason:'sf', rounded};
+  }
+  for(let k=1;k<=7;k++){
+    if(k!==sf && eq(v, roundSig(exact,k))) return {status:'warn', reason:'sf', rounded};
+  }
+  if(Math.abs(v-exact)/Math.abs(exact) <= 0.01) return {status:'warn', reason:'mellansteg', rounded};
+  return {status:'fel', rounded};
+}
+
+/* ---------- slump ---------- */
+const pick = a => a[Math.floor(Math.random()*a.length)];
+function rndMassV(diff){
+  if(diff==='latt') return mkVal(pick(['5,0','10,0','12,0','15,0','20,0','25,0','40,0','50,0']));
+  return mkVal((3+Math.random()*60).toFixed(1).replace('.',','));
+}
+function rndVolV(){ return mkVal(pick(['0,100','0,150','0,200','0,250','0,500','0,750','1,00'])); }
+function rndConcV(){ return mkVal(pick(['0,050','0,100','0,150','0,200','0,250','0,400','0,500'])); }
+
+/* ---------- generatorer ----------
+   Returnerar {tag,eq,qtext,given[],atomEls[],answer,sf,unit,steps[],signature,rxIdx?,solute?,dbg}
+   OBS: answer lagras med full precision. Avrundning sker endast vid visning/bedömning. */
+function stepObj(text, math){ return {text, math}; }
+function finalStep(text, mathPrefix, answer, sf, unit){
+  return stepObj(text, `${mathPrefix} = <b>${fmtSig(answer,sf)} ${unit}</b> &nbsp;(${sf} gällande siffror)`);
+}
+function sub(f){ return f.replace(/(\d+)/g,'<sub>$1</sub>'); }
+function eqHTML(rx){
+  const side = arr => arr.map(([c,f]) => (c>1?c+' ':'')+sub(f)).join(' + ');
+  return side(rx.r)+' → '+side(rx.p);
+}
+function givenM(f){ return `M(${sub(f)}) = ${fmtM(molarMass(f))} g/mol`; }
+
+function genMass(diff){
+  const rxIdx = Math.floor(Math.random()*REACTIONS.length);
+  const rx = REACTIONS[rxIdx];
+  const A = pick(rx.r);
+  const useGas = (diff==='svar' && rx.gasProd!==undefined && Math.random()<0.6);
+  const B = useGas ? rx.p[rx.gasProd] : pick(rx.p);
+  const [cA,fA]=A, [cB,fB]=B;
+  const MA=molarMass(fA), MB=molarMass(fB);
+  const mA = rndMassV(diff);
+  const nA = mA.v/MA, nB = nA*cB/cA;
+  let sf = mA.sf;
+  const steps=[
+    stepObj(`Beräkna substansmängden ${sub(fA)}.`,
+      `n(${sub(fA)}) = m/M = ${mA.str} g / ${fmtM(MA)} g/mol = ${fmt(nA)} mol`),
+    stepObj(`Använd molförhållandet ur reaktionsformeln: ${cA} ${sub(fA)} ⇒ ${cB} ${sub(fB)}.`,
+      `n(${sub(fB)}) = ${fmt(nA)} mol · ${cB}/${cA} = ${fmt(nB)} mol`)
+  ];
+  let answer, unit, q;
+  if(useGas){
+    sf = Math.min(sf, 3); /* Vm = 24,0 → 3 g.s. */
+    answer = nB*24.0; unit='dm³';
+    q = `Hur stor <b>volym</b> ${NAMES[fB]} (${sub(fB)}, gas) bildas när <b>${mA.str} g</b> ${NAMES[fA]} reagerar fullständigt? V<sub>m</sub> = 24,0 dm³/mol.`;
+    steps.push(finalStep(`Beräkna gasvolymen med molvolymen.`,
+      `V = n · V<sub>m</sub> = ${fmt(nB)} mol · 24,0 dm³/mol`, answer, sf, unit));
+  } else {
+    answer = nB*MB; unit='g';
+    q = `Hur stor <b>massa</b> ${NAMES[fB]} (${sub(fB)}) bildas när <b>${mA.str} g</b> ${NAMES[fA]} reagerar fullständigt?`;
+    steps.push(finalStep(`Beräkna massan ${sub(fB)}.`,
+      `m(${sub(fB)}) = n · M = ${fmt(nB)} mol · ${fmtM(MB)} g/mol`, answer, sf, unit));
+  }
+  const given=[];
+  if(diff==='latt'){ given.push(givenM(fA)); if(!useGas) given.push(givenM(fB)); }
+  return {tag:'Massa → mol → massa', eq:eqHTML(rx), qtext:q, given,
+    atomEls: diff==='latt'?[]:elementsOf([fA,fB]), answer, sf, unit, steps,
+    rxIdx, signature:['mass',rxIdx,fA,fB,useGas?'g':'m',mA.str].join('|'),
+    dbg:{kind:useGas?'gas':'mass', mA:mA.v, MA, MB, cA, cB}};
+}
+
+const LIMIT_IDX = REACTIONS.map((rx,i)=>rx.r.length===2?i:-1).filter(i=>i>=0);
+
+function genLimit(diff){
+  const rxIdx = pick(LIMIT_IDX);
+  const rx = REACTIONS[rxIdx];
+  const [A,B]=rx.r, P=rx.p[0];
+  const [cA,fA]=A,[cB,fB]=B,[cP,fP]=P;
+  const MA=molarMass(fA),MB=molarMass(fB),MP=molarMass(fP);
+  const mA=rndMassV(diff), mB=rndMassV(diff);
+  const nA=mA.v/MA, nB=mB.v/MB;
+  const limA = (nA/cA) <= (nB/cB);
+  const [fL,cL,nL] = limA?[fA,cA,nA]:[fB,cB,nB];
+  const [fX,cX,nX,MX,mXstr] = limA?[fB,cB,nB,MB,mB.str]:[fA,cA,nA,MA,mA.str];
+  const nP = nL*cP/cL;
+  const sf = Math.min(mA.sf, mB.sf);
+  const steps=[
+    stepObj(`Beräkna substansmängderna av båda reaktanterna.`,
+      `n(${sub(fA)}) = ${mA.str}/${fmtM(MA)} = ${fmt(nA)} mol &nbsp;·&nbsp; n(${sub(fB)}) = ${mB.str}/${fmtM(MB)} = ${fmt(nB)} mol`),
+    stepObj(`Jämför n/koefficient för att hitta den begränsande faktorn.`,
+      `n/c: ${sub(fA)}: ${fmt(nA/cA)} &nbsp;·&nbsp; ${sub(fB)}: ${fmt(nB/cB)} ⇒ <b>${sub(fL)} är begränsande</b>`),
+    stepObj(`Räkna produktmängden utifrån den begränsande faktorn.`,
+      `n(${sub(fP)}) = ${fmt(nL)} mol · ${cP}/${cL} = ${fmt(nP)} mol`)
+  ];
+  let answer, unit, q, variant;
+  if(diff==='svar' && Math.random()<0.5){
+    variant='rest';
+    const nUsed = nL*cX/cL;
+    answer = (nX-nUsed)*MX; unit='g';
+    q = `<b>${mA.str} g</b> ${NAMES[fA]} blandas med <b>${mB.str} g</b> ${NAMES[fB]} och reaktionen sker fullständigt. Hur stor massa av <b>reaktanten i överskott</b> blir kvar oreagerad?`;
+    steps.push(stepObj(`Beräkna hur mycket av överskottsreaktanten (${sub(fX)}) som förbrukas.`,
+      `n(förbrukad) = ${fmt(nL)} · ${cX}/${cL} = ${fmt(nUsed)} mol`));
+    steps.push(finalStep(`Räkna massan som blir kvar.`,
+      `m(kvar) = (${fmt(nX)} − ${fmt(nUsed)}) mol · ${fmtM(MX)} g/mol`, answer, sf, unit));
+  } else {
+    variant='prod';
+    answer = nP*MP; unit='g';
+    q = `<b>${mA.str} g</b> ${NAMES[fA]} blandas med <b>${mB.str} g</b> ${NAMES[fB]}. Hur stor massa ${NAMES[fP]} (${sub(fP)}) kan högst bildas?`;
+    steps.push(finalStep(`Beräkna produktens massa.`,
+      `m(${sub(fP)}) = ${fmt(nP)} mol · ${fmtM(MP)} g/mol`, answer, sf, unit));
+  }
+  const given=[];
+  if(diff==='latt') given.push(givenM(fA),givenM(fB),givenM(fP));
+  return {tag:'Begränsande faktor', eq:eqHTML(rx), qtext:q, given,
+    atomEls: diff==='latt'?[]:elementsOf([fA,fB,fP]), answer, sf, unit, steps,
+    rxIdx, signature:['limit',rxIdx,variant,mA.str,mB.str].join('|'),
+    dbg:{kind:variant, mA:mA.v, mB:mB.v, MA, MB, MP, cA, cB, cP, limA}};
+}
+
+function genYield(diff){
+  const rxIdx = Math.floor(Math.random()*REACTIONS.length);
+  const rx = REACTIONS[rxIdx];
+  const A = rx.r[0], P = pick(rx.p);
+  const [cA,fA]=A,[cP,fP]=P;
+  const MA=molarMass(fA), MP=molarMass(fP);
+  const mA = rndMassV(diff);
+  const nA=mA.v/MA, nP=nA*cP/cA, mTeor=nP*MP;
+  const pctStr = pick(['62','68','74','78','82','85','88','91','94']);
+  const pct = parseFloat(pctStr);
+  const baseSteps=[
+    stepObj(`Beräkna substansmängden ${sub(fA)}.`,
+      `n(${sub(fA)}) = ${mA.str} g / ${fmtM(MA)} g/mol = ${fmt(nA)} mol`),
+    stepObj(`Använd molförhållandet ${cA} ${sub(fA)} ⇒ ${cP} ${sub(fP)}.`,
+      `n(${sub(fP)}) = ${fmt(nA)} · ${cP}/${cA} = ${fmt(nP)} mol`),
+    stepObj(`Beräkna det teoretiska utbytet.`,
+      `m(teor.) = ${fmt(nP)} mol · ${fmtM(MP)} g/mol = ${fmt(mTeor)} g`)
+  ];
+  let answer, unit, q, steps, variant, given=[], dbgExtra={};
+  if(diff==='svar' && Math.random()<0.5){
+    variant='prakt';
+    const sf = Math.min(mA.sf, 2); /* utbytesprocenten har 2 g.s. */
+    answer = mTeor*pct/100; unit='g';
+    q = `<b>${mA.str} g</b> ${NAMES[fA]} får reagera enligt formeln ovan. Utbytet är erfarenhetsmässigt <b>${pctStr} %</b>. Hur stor massa ${NAMES[fP]} (${sub(fP)}) erhålls i praktiken?`;
+    steps=[...baseSteps, finalStep(`Beräkna det praktiska utbytet.`,
+      `m(prakt.) = ${fmt(mTeor)} g · ${pctStr}/100`, answer, sf, unit)];
+    dbgExtra={pct};
+    if(diff==='latt') given.push(givenM(fA),givenM(fP));
+    return {tag:'Procentuellt utbyte', eq:eqHTML(rx), qtext:q, given,
+      atomEls:elementsOf([fA,fP]), answer, sf, unit, steps,
+      rxIdx, signature:['yield',rxIdx,fP,variant,mA.str,pctStr].join('|'),
+      dbg:{kind:variant, mA:mA.v, MA, MP, cA, cP, ...dbgExtra}};
+  }
+  variant='pct';
+  const mActVal = roundSig(mTeor*pct/100, 3);
+  const mActStr = fmtSig(mActVal, 3);
+  const sf = Math.min(mA.sf, 3);
+  answer = mActVal/mTeor*100; unit='%';
+  q = `<b>${mA.str} g</b> ${NAMES[fA]} får reagera enligt formeln ovan. Vid försöket erhölls <b>${mActStr} g</b> ${NAMES[fP]} (${sub(fP)}). Beräkna det <b>procentuella utbytet</b>.`;
+  steps=[...baseSteps, finalStep(`Jämför praktiskt och teoretiskt utbyte.`,
+    `utbyte = ${mActStr} g / ${fmt(mTeor)} g · 100 %`, answer, sf, unit)];
+  if(diff==='latt') given.push(givenM(fA),givenM(fP));
+  return {tag:'Procentuellt utbyte', eq:eqHTML(rx), qtext:q, given,
+    atomEls: diff==='latt'?[]:elementsOf([fA,fP]), answer, sf, unit, steps,
+    rxIdx, signature:['yield',rxIdx,fP,variant,mA.str,mActStr].join('|'),
+    dbg:{kind:variant, mA:mA.v, MA, MP, cA, cP, mAct:mActVal}};
+}
+
+function genConc(diff){
+  const solute = pick(SOLUTES);
+  const M = molarMass(solute);
+  const name = NAMES[solute];
+  let answer, unit, q, steps, given=[], atomEls=[], variant, sigNums, sf, dbg;
+  const r = Math.random();
+  if(diff==='latt' && r<0.5){
+    variant='nV';
+    const n = mkVal(pick(['0,10','0,20','0,25','0,40','0,50','0,75']));
+    const V = rndVolV();
+    sf = Math.min(n.sf, V.sf);
+    answer = n.v/V.v; unit='mol/dm³';
+    q = `<b>${n.str} mol</b> ${name} (${sub(solute)}) löses i vatten till <b>${V.str} dm³</b> lösning. Beräkna lösningens koncentration.`;
+    steps=[finalStep(`Använd definitionen av koncentration.`,
+      `c = n/V = ${n.str} mol / ${V.str} dm³`, answer, sf, unit)];
+    sigNums=[n.str,V.str]; dbg={kind:variant, n:n.v, V:V.v};
+  } else if(diff==='svar' && r<0.5){
+    variant='sp';
+    const c1 = mkVal(pick(['0,500','1,00','2,00']));
+    let c2 = mkVal(pick(['0,0500','0,100','0,125','0,150','0,200','0,250']));
+    const V2 = rndVolV();
+    sf = Math.min(c1.sf, c2.sf, V2.sf);
+    const V1 = c2.v*V2.v/c1.v;
+    answer = V1*1000; unit='cm³';
+    q = `Du ska bereda <b>${V2.str} dm³</b> av en <b>${c2.str} mol/dm³</b> lösning av ${name} genom att späda en <b>${c1.str} mol/dm³</b> stamlösning. Vilken volym stamlösning behövs (i cm³)?`;
+    steps=[
+      stepObj(`Vid spädning är substansmängden konstant: c₁V₁ = c₂V₂.`,
+        `V₁ = c₂V₂/c₁ = ${c2.str} · ${V2.str} / ${c1.str} = ${fmt(V1)} dm³`),
+      finalStep(`Omvandla till cm³ (1 dm³ = 1000 cm³).`,
+        `V₁ = ${fmt(V1)} dm³ · 1000`, answer, sf, unit)
+    ];
+    sigNums=[c1.str,c2.str,V2.str]; dbg={kind:variant, c1:c1.v, c2:c2.v, V2:V2.v};
+  } else if(diff==='svar'){
+    variant='gram';
+    const c = rndConcV(); const V = rndVolV();
+    sf = Math.min(c.sf, V.sf);
+    answer = c.v*V.v*M; unit='g';
+    q = `Hur många <b>gram</b> ${name} (${sub(solute)}) behöver du väga upp för att bereda <b>${V.str} dm³</b> lösning med koncentrationen <b>${c.str} mol/dm³</b>?`;
+    steps=[
+      stepObj(`Beräkna substansmängden som behövs.`,
+        `n = c·V = ${c.str} mol/dm³ · ${V.str} dm³ = ${fmt(c.v*V.v)} mol`),
+      finalStep(`Beräkna molmassan och massan.`,
+        `M(${sub(solute)}) = ${fmtM(M)} g/mol ⇒ m = ${fmt(c.v*V.v)} mol · ${fmtM(M)} g/mol`, answer, sf, unit)
+    ];
+    atomEls = elementsOf([solute]);
+    sigNums=[c.str,V.str]; dbg={kind:variant, c:c.v, V:V.v, M};
+  } else {
+    variant='mV';
+    const m = diff==='latt' ? mkVal(pick(['2,00','4,00','5,00','8,00','10,0','20,0']))
+                            : mkVal((1+Math.random()*30).toFixed(1).replace('.',','));
+    const V = rndVolV();
+    sf = Math.min(m.sf, V.sf);
+    const n = m.v/M;
+    answer = n/V.v; unit='mol/dm³';
+    q = `<b>${m.str} g</b> ${name} (${sub(solute)}) löses i vatten till <b>${V.str} dm³</b> lösning. Beräkna lösningens koncentration.`;
+    steps=[
+      stepObj(`Beräkna substansmängden.`,
+        `n = m/M = ${m.str} g / ${fmtM(M)} g/mol = ${fmt(n)} mol`),
+      finalStep(`Beräkna koncentrationen.`,
+        `c = n/V = ${fmt(n)} mol / ${V.str} dm³`, answer, sf, unit)
+    ];
+    if(diff==='latt') given.push(givenM(solute));
+    else atomEls = elementsOf([solute]);
+    sigNums=[m.str,V.str]; dbg={kind:variant, m:m.v, V:V.v, M};
+  }
+  return {tag:'Koncentration', eq:null, qtext:q, given, atomEls, answer, sf, unit, steps,
+    solute, signature:['conc',solute,variant,...sigNums].join('|'), dbg};
+}
+
+const GENS = {mass:genMass, limit:genLimit, yield:genYield, conc:genConc};
+const MIXPOOL = ['mass','limit','yield','conc'];
+
+/* ---------- repetitionsskydd ---------- */
+const seenSignatures = new Set();
+const recentRx = [];
+const recentSolutes = [];
+function generateFresh(type, diff){
+  let p = null;
+  for(let i=0;i<80;i++){
+    const t = type==='mix' ? pick(MIXPOOL) : type;
+    p = GENS[t](diff);
+    if(seenSignatures.has(p.signature)) continue;
+    if(i<40 && p.rxIdx!==undefined && recentRx.includes(p.rxIdx)) continue;
+    if(i<40 && p.solute && recentSolutes.includes(p.solute)) continue;
+    break;
+  }
+  seenSignatures.add(p.signature);
+  if(p.rxIdx!==undefined){
+    recentRx.push(p.rxIdx);
+    if(recentRx.length>7) recentRx.shift();
+  }
+  if(p.solute){
+    recentSolutes.push(p.solute);
+    if(recentSolutes.length>5) recentSolutes.shift();
+  }
+  return p;
+}
+
+/* Export för testsviten (Node) */
+if(typeof module!=='undefined' && module.exports){
+  module.exports = {ATOMIC, ATOMIC_STR, NAMES, REACTIONS, SOLUTES,
+    parseFormula, molarMass, isBalanced, countSF, roundSig, fmtSig, fmt,
+    parseNum, evaluate, genMass, genLimit, genYield, genConc, generateFresh, seenSignatures};
+}
+
+/* ================================================================
+   UI — körs endast i webbläsaren
+   ================================================================ */
+if(typeof document!=='undefined'){
+
+const TYPES = [
+  {id:'mass', label:'Massa → mol → massa'},
+  {id:'limit', label:'Begränsande faktor'},
+  {id:'yield', label:'Utbyte'},
+  {id:'conc', label:'Koncentration'},
+  {id:'mix', label:'Blandat'}
+];
+const DIFFS = [
+  {id:'latt', label:'Lätt'},
+  {id:'medel', label:'Medel'},
+  {id:'svar', label:'Svår'}
+];
+let curType='mass', curDiff='latt';
+let problem=null, answered=false, revealed=false, stepIdx=0;
+let score={ok:0,tot:0,streak:0};
+let history=[];            /* endast i minnet — rensas vid omladdning */
+let histCounter=0;
+let currentEntry=null;
+let reviewing=false, savedState=null;
+
+const $ = id => document.getElementById(id);
+
+function buildChips(elId, items, cur, onSet){
+  const el = $(elId); el.innerHTML='';
+  items.forEach(it=>{
+    const b=document.createElement('button');
+    b.className='chip'+(it.id===cur?' on':'');
+    b.textContent=it.label;
+    b.onclick=()=>onSet(it.id);
+    el.appendChild(b);
+  });
+}
+function refreshChips(){
+  buildChips('typeChips',TYPES,curType,id=>{curType=id;newProblem();});
+  buildChips('diffChips',DIFFS,curDiff,id=>{curDiff=id;newProblem();});
+}
+
+function renderProblem(p, review){
+  $('qtag').textContent = p.tag + ' · ' + (review?'Historik':DIFFS.find(d=>d.id===curDiff).label);
+  $('qtag').className = 'qtype-tag' + (review?' review-tag':'');
+  $('equation').style.display = p.eq ? 'block':'none';
+  if(p.eq) $('equation').innerHTML = p.eq;
+  $('qtext').innerHTML = p.qtext;
+  const g=$('given');
+  g.innerHTML = p.given.map(x=>`<span>${x}</span>`).join('');
+  g.style.display = p.given.length?'flex':'none';
+  const am=$('atommass');
+  if(p.atomEls.length){
+    am.style.display='block';
+    am.innerHTML='Atommassor (g/mol): '+p.atomEls.map(e=>`<em>${e}</em>&nbsp;${ATOMIC_STR[e]}`).join(' · ');
+  } else am.style.display='none';
+  $('unit').textContent = p.unit;
+  $('steps').innerHTML='';
+  $('feedback').className='feedback'; $('feedback').innerHTML='';
+  $('solution').className='solution';
+}
+
+function newProblem(){
+  reviewing=false; savedState=null;
+  refreshChips();
+  problem = generateFresh(curType, curDiff);
+  answered=false; revealed=false; stepIdx=0; currentEntry=null;
+  renderProblem(problem, false);
+  $('answer').value=''; $('answer').readOnly=false;
+  $('checkBtn').style.display='inline-block';
+  $('solBtn').style.display='inline-block';
+  $('nextBtn').style.display='inline-block';
+  $('backBtn').style.display='none';
+  $('stepBtn').style.display='inline-block';
+  $('answer').focus();
+}
+
+function ensureEntry(){
+  if(currentEntry) return currentEntry;
+  histCounter++;
+  currentEntry = {n:histCounter, problem, userAnswer:'', status:'fel'};
+  history.unshift(currentEntry);
+  renderHistory();
+  return currentEntry;
+}
+
+const STATUS_LABEL = {ok:'rätt ✓', warn:'rätt (avrundning)', fel:'fel ✗', reveal:'visade lösning'};
+
+function renderHistory(){
+  const panel=$('histPanel');
+  if(!history.length){ panel.style.display='none'; return; }
+  panel.style.display='block';
+  const list=$('histList'); list.innerHTML='';
+  history.forEach(e=>{
+    const b=document.createElement('button');
+    b.className='hist-item';
+    const plain=e.problem.qtext.replace(/<[^>]*>/g,'');
+    b.innerHTML=`<span class="hn">#${e.n}</span><span class="ht">${e.problem.tag}: ${plain}</span><span class="hs s-${e.status}">${STATUS_LABEL[e.status]}</span>`;
+    b.onclick=()=>openReview(e);
+    list.appendChild(b);
+  });
+}
+
+function openReview(entry){
+  if(!reviewing){
+    savedState={problem, answered, revealed, stepIdx,
+      input:$('answer').value,
+      fbClass:$('feedback').className, fbHTML:$('feedback').innerHTML,
+      solOpen:$('solution').classList.contains('open'),
+      stepsHTML:$('steps').innerHTML, stepBtnVis:$('stepBtn').style.display};
+  }
+  reviewing=true;
+  renderProblem(entry.problem, true);
+  $('answer').value=entry.userAnswer; $('answer').readOnly=true;
+  $('checkBtn').style.display='none';
+  $('solBtn').style.display='none';
+  $('backBtn').style.display='inline-block';
+  const fb=$('feedback');
+  fb.className='feedback '+(entry.status==='ok'?'ok':entry.status==='fel'?'fel':'warn');
+  fb.innerHTML=`Resultat: ${STATUS_LABEL[entry.status]} — rätt svar: <b>${fmtSig(entry.problem.answer,entry.problem.sf)} ${entry.problem.unit}</b>.<br>Klicka <b>← Fortsätt träna</b> för att återgå till din pågående uppgift, eller <b>Ny uppgift</b> för att börja en ny.`;
+  $('solution').className='solution open';
+  const st=$('steps'); st.innerHTML='';
+  entry.problem.steps.forEach((s,i)=>{
+    const div=document.createElement('div');
+    div.className='step';
+    div.innerHTML=`<span class="n">${i+1}</span><span class="t">${s.text}<span class="m">${s.math}</span></span>`;
+    st.appendChild(div);
+  });
+  $('stepBtn').style.display='none';
+  window.scrollTo({top:0});
+}
+
+function closeReview(){
+  reviewing=false;
+  const s=savedState; savedState=null;
+  if(!s){ newProblem(); return; }
+  problem=s.problem; answered=s.answered; revealed=s.revealed; stepIdx=s.stepIdx;
+  renderProblem(problem, false);
+  $('answer').value=s.input; $('answer').readOnly=false;
+  $('feedback').className=s.fbClass; $('feedback').innerHTML=s.fbHTML;
+  $('solution').className='solution'+(s.solOpen?' open':'');
+  $('steps').innerHTML=s.stepsHTML;
+  $('stepBtn').style.display=s.stepBtnVis;
+  $('checkBtn').style.display='inline-block';
+  $('solBtn').style.display='inline-block';
+  $('nextBtn').style.display='inline-block';
+  $('backBtn').style.display='none';
+  $('answer').focus();
+}
+
+function check(){
+  if(reviewing) return;
+  const raw = $('answer').value;
+  const res = evaluate(raw, problem.answer, problem.sf);
+  const fb = $('feedback');
+  if(res.status==='invalid'){ fb.className='feedback fel'; fb.textContent='Skriv in ett tal, t.ex. 12,5'; return; }
+  const correct = res.status==='ok'||res.status==='warn';
+  if(!answered && !revealed){
+    score.tot++;
+    if(correct){ score.ok++; score.streak++; } else score.streak=0;
+    answered=true;
+    updateScore();
+  }
+  const entry=ensureEntry();
+  entry.userAnswer=raw;
+  if(entry.status!=='reveal'){
+    if(entry.status!=='ok') entry.status = res.status==='invalid'?'fel':res.status;
+  }
+  renderHistory();
+  const ansStr = `<b>${fmtSig(problem.answer,problem.sf)} ${problem.unit}</b>`;
+  if(res.status==='ok'){
+    fb.className='feedback ok';
+    fb.innerHTML=`Rätt! ✓ Svar: ${ansStr} (${problem.sf} gällande siffror)`;
+  } else if(res.status==='warn' && res.reason==='sf'){
+    fb.className='feedback warn';
+    fb.innerHTML=`Rätt beräknat — men ange svaret med <b>${problem.sf} gällande siffror</b>: ${ansStr}. Räknas som rätt.`;
+  } else if(res.status==='warn'){
+    fb.className='feedback warn';
+    fb.innerHTML=`Mycket nära — kontrollera att du inte avrundat i mellanstegen. Räkna med fulla värden och avrunda först i slutsvaret: ${ansStr}. Räknas som rätt.`;
+  } else {
+    fb.className='feedback fel';
+    fb.textContent='Inte riktigt — kontrollera dina mellansteg eller visa lösningen.';
+  }
+}
+
+function showStep(){
+  if(reviewing) return;
+  if(stepIdx===0) $('solution').className='solution open';
+  if(stepIdx < problem.steps.length){
+    const s = problem.steps[stepIdx];
+    const div=document.createElement('div');
+    div.className='step';
+    div.innerHTML=`<span class="n">${stepIdx+1}</span><span class="t">${s.text}<span class="m">${s.math}</span></span>`;
+    $('steps').appendChild(div);
+    stepIdx++;
+  }
+  if(stepIdx>=problem.steps.length) $('stepBtn').style.display='none';
+}
+
+function reveal(){
+  if(reviewing) return;
+  if(!answered){
+    const entry=ensureEntry();
+    entry.status='reveal';
+    renderHistory();
+  }
+  revealed=true;
+  if(stepIdx===0) showStep();
+  $('solution').className='solution open';
+}
+
+function updateScore(){
+  $('scoreOk').textContent=score.ok;
+  $('scoreTot').textContent=score.tot;
+  $('streak').textContent = score.streak>=2 ? `🔥 ${score.streak} i rad` : '';
+}
+
+$('checkBtn').onclick=check;
+$('answer').addEventListener('keydown',e=>{ if(e.key==='Enter') check(); });
+$('solBtn').onclick=reveal;
+$('stepBtn').onclick=showStep;
+$('nextBtn').onclick=newProblem;
+$('backBtn').onclick=closeReview;
+
+newProblem();
+}
+</script>
+</body>
+</html>
