@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#976299">
+<meta name="description" content="Räkneguiden: arbetsgångar för reaktionsberäkningar, gaser, termokemi, oxidationstal, pH och namngivning i gymnasiekemin.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%2326241F' stroke-width='7' stroke-linecap='round'%3E%3Cline x1='14' y1='40' x2='37' y2='59'/%3E%3Cline x1='37' y1='59' x2='62' y2='40'/%3E%3Cline x1='62' y1='40' x2='87' y2='59'/%3E%3C/g%3E%3Ccircle cx='14' cy='40' r='13.5' fill='%231B9E6E'/%3E%3Ccircle cx='37' cy='59' r='13' fill='%23D9502B'/%3E%3Ccircle cx='62' cy='40' r='13' fill='%23E9A83C'/%3E%3Ccircle cx='87' cy='59' r='12' fill='%23D28FC4'/%3E%3C/svg%3E">
+
+<meta name="theme-color" content="#1F7A38">
 <title>Räkneguiden · gymnasiekemi</title>
-<meta name="description" content="Räkneguiden för gymnasiekemi: arbetsgångar, gällande siffror och tips. Formler och tabellvärden finns i Mafys tabeller.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%97%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -14,22 +15,33 @@
     --paper:#F7F8F6; --grid:#DEE6E0; --grid-major:#CFDAD2;
     --ink:#17241E; --soft:#4C5B53;
     --ke01:#E22A36; --ke01-soft:#F7E3E5;
-    --ke04:#976299; --ke04-soft:#F1E9F1;
+    --ke03:#008762; --ke04:#1F7A38; --ke04-soft:#E3F4E5;
+    --ke05:#976299; --ke06:#8F6D00;
     --card:#FFFFFF; --line:#C9D4CC; --varning:#B25A0B;
     --mono:'JetBrains Mono',ui-monospace,monospace;
     --head:'Poppins',system-ui,sans-serif;
     --sans:'Inter',system-ui,sans-serif;
   }
-  h1,h2,h3{font-family:var(--head)}
-  @media (prefers-color-scheme: dark){
-    :root{
-      --paper:#131B17; --grid:#1C2620; --grid-major:#233029;
-      --ink:#E8EEEA; --soft:#9FB0A6;
-      --ke01:#D37379; --ke01-soft:#2D1617;
-      --ke04:#C990CB; --ke04-soft:#2A172B;
-      --card:#1A231E; --line:#2C3A32;
-    }
+  html[data-tema="mork"]{
+    --paper:#1B1E17;
+    --grid:#202A22;
+    --grid-major:#27322A;
+    --ink:#E0EBE6;
+    --soft:#A1B0A8;
+    --ke01:#E22834;
+    --ke01-soft:#43191D;
+    --ke03:#0AFFBC;
+    --ke04:#3CCD64;
+    --ke04-soft:#1A421F;
+    --ke05:#9D6A9F;
+    --ke06:#FFC50A;
+    --card:#222222;
+    --line:#3D4D41;
+    --varning:#F49948;
   }
+
+  h1,h2,h3{font-family:var(--head)}
+  
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     font-family:var(--sans);color:var(--ink);
@@ -66,7 +78,11 @@
     letter-spacing:.08em;text-transform:uppercase;
     padding:8px 14px;border-radius:8px;color:#fff;margin-bottom:12px;
   }
-  h2.k01{background:var(--ke01)} h2.k04{background:var(--ke04)} h2.alla{background:var(--soft)}
+  h2.k01{background:var(--ke01)} h2.k03{background:var(--ke03)} h2.k04{background:var(--ke04)}
+  h2.k05{background:var(--ke05)} h2.k06{background:var(--ke06)} h2.alla{background:var(--soft)}
+  h2{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  h2 .kurs{font-size:11.5px;letter-spacing:.08em;background:rgba(255,255,255,.22);
+    padding:3px 10px;border-radius:999px;white-space:nowrap}
   .kort{
     background:var(--card);border:1px solid var(--line);border-radius:10px;
     padding:16px 18px;margin-bottom:10px;
@@ -93,9 +109,65 @@
     .kort{break-inside:avoid;border:1px solid #999}
     h2{color:#000;background:none;border-bottom:2px solid #000;border-radius:0;padding:4px 0}
   }
+
+  .felknapp{position:fixed;right:16px;bottom:16px;z-index:50;font-size:13px;font-weight:600;
+    font-family:var(--sans);background:var(--card);color:var(--soft);border:1.5px solid var(--line);
+    border-radius:999px;padding:9px 14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.14)}
+  .felknapp:hover{color:var(--ke04);border-color:var(--ke04)}
+  .felpanel{position:fixed;right:16px;bottom:64px;z-index:50;
+    width:min(340px,calc(100vw - 32px));background:var(--card);
+    border:1px solid var(--line);border-radius:12px;padding:14px;
+    box-shadow:0 8px 28px rgba(0,0,0,.2)}
+  .felpanel h3{font-size:14px;margin-bottom:6px}
+  .felpanel textarea{width:100%;height:70px;font-family:var(--sans);font-size:13px;
+    padding:8px;border:1.5px solid var(--line);border-radius:8px;
+    background:var(--paper);color:var(--ink);resize:vertical;box-sizing:border-box}
+  .felmeta{font-family:var(--mono);font-size:10.5px;color:var(--soft);
+    background:var(--paper);border-radius:6px;padding:6px 8px;margin:8px 0;
+    max-height:70px;overflow:auto;white-space:pre-wrap}
+  .felrad{display:flex;gap:6px}
+  .felrad button{flex:1;font-size:12.5px;padding:8px 6px;font-family:var(--sans);font-weight:600;
+    border-radius:8px;cursor:pointer;border:1.5px solid transparent}
+  .fel-primar{background:var(--ke04);color:#fff}
+  .fel-ghost{background:var(--card);border-color:var(--line);color:var(--ink)}
+  .felok{font-size:12px;color:#1D7A33;margin-top:6px;display:none}
+  @media print{.felknapp,.felpanel{display:none!important}}
+
+  .temaknapp{position:fixed;top:14px;right:14px;z-index:60;width:40px;height:40px;
+    border-radius:50%;border:1.5px solid var(--line,var(--linje,#888));
+    background:var(--card,#fff);color:var(--ink,#222);cursor:pointer;font-size:17px;
+    line-height:1;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.18);padding:0}
+  .temaknapp:hover{transform:scale(1.07)}
+  @media print{.temaknapp{display:none!important}}
 </style>
+<script data-tema-init>
+(function(){
+  var rot=document.documentElement;
+  if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+    rot.dataset.tema='mork';
+  }
+  function uppdatera(btn){
+    var mork=rot.dataset.tema==='mork';
+    btn.textContent = mork ? '\u2600\uFE0F' : '\uD83C\uDF19';
+    btn.setAttribute('aria-label', mork ? 'Byt till ljust l\u00e4ge' : 'Byt till m\u00f6rkt l\u00e4ge');
+    btn.title = mork ? 'Byt till ljust l\u00e4ge' : 'Byt till m\u00f6rkt l\u00e4ge';
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('temaBtn');
+    if(!btn) return;
+    uppdatera(btn);
+    btn.onclick=function(){
+      if(rot.dataset.tema==='mork') delete rot.dataset.tema;
+      else rot.dataset.tema='mork';
+      uppdatera(btn);
+    };
+  });
+})();
+</script>
 </head>
 <body>
+<button class="temaknapp" id="temaBtn" type="button">🌙</button>
 <div class="wrap">
   <a class="hem" href="index.html">&#8592; Startsidan</a>
   <header>
@@ -107,17 +179,27 @@
   </header>
 
   <section aria-labelledby="r-mafy">
-    <h2 class="alla" id="r-mafy">Formler och tabellvärden</h2>
+    <h2 class="alla" id="r-mafy">Formler och tabellvärden <span class="kurs">Räknekurserna</span></h2>
     <div class="kort" style="border-left:5px solid var(--ke04)">
       <h3>Allt du behöver slå upp finns i Mafys tabeller</h3>
-      <p style="font-size:14.5px;margin-bottom:10px">Samband, konstanter, atommassor och löslighetstabeller: använd samma tabellverk som på studentexamen, så tränar du på att hitta rätt från början.</p>
+      <p style="font-size:14.5px;margin-bottom:10px">Samband, konstanter, atommassor och löslighetstabeller: använd samma tabellverk som på studentexamen, så tränar du på att hitta rätt från början. Gäller räkneuppgifterna: namngivningen i KE03 finns inte i tabellboken, den hittar du i Namngivningsguiden nedan.</p>
       <a href="https://mafytaulukot.fi/" target="_blank" rel="noopener"
          style="display:inline-block;font-weight:600;font-size:15px;text-decoration:none;color:#fff;background:var(--ke04);padding:10px 20px;border-radius:8px">Öppna Mafys tabeller</a>
     </div>
   </section>
 
+  <section aria-labelledby="r-ke03">
+    <h2 class="k03" id="r-ke03">Namngivning av organiska föreningar <span class="kurs">KE03</span></h2>
+    <div class="kort" style="border-left:5px solid var(--ke03)">
+      <h3>Namngivningen finns inte i tabellboken</h3>
+      <p style="font-size:14.5px;margin-bottom:10px">Ämnesklasser, funktionella grupper, prefix, ändelser och arbetsgången steg för steg finns samlade i Namngivningsguiden, med bilder och exempel på tre nivåer.</p>
+      <a href="namngivningsguiden-ke03.html"
+         style="display:inline-block;font-weight:600;font-size:15px;text-decoration:none;color:#fff;background:var(--ke03);padding:10px 20px;border-radius:8px">Öppna Namngivningsguiden</a>
+    </div>
+  </section>
+
   <section aria-labelledby="r-ke04">
-    <h2 class="k04" id="r-ke04">Arbetsgång för reaktionsberäkningar</h2>
+    <h2 class="k04" id="r-ke04">Arbetsgång för reaktionsberäkningar <span class="kurs">KE04</span></h2>
     <div class="kort">
       <ol>
         <li>Skriv en <b>balanserad reaktionsformel</b>.</li>
@@ -142,7 +224,7 @@
   </section>
 
   <section aria-labelledby="r-gs">
-    <h2 class="alla" id="r-gs">Gällande siffror</h2>
+    <h2 class="alla" id="r-gs">Gällande siffror <span class="kurs">Alla kurser</span></h2>
     <div class="kort">
       <ul>
         <li>Svaret anges med lika många gällande siffror som det <b>minst noggranna mätvärdet</b> i uppgiften.</li>
@@ -153,7 +235,7 @@
   </section>
 
   <section aria-labelledby="r-ox">
-    <h2 class="alla" id="r-ox">Arbetsgång: oxidationstal och redox</h2>
+    <h2 class="k05" id="r-ox">Arbetsgång: oxidationstal och redox <span class="kurs">KE05</span></h2>
     <div class="kort">
       <ol>
         <li>Skriv ut de oxidationstal du känner till. Ett grundämne i fri form har noll. Fluor har alltid minus ett. Syre har oftast minus två, väte oftast plus ett, alkalimetallerna plus ett och alkaliska jordartsmetaller plus två.</li>
@@ -166,7 +248,7 @@
   </section>
 
   <section aria-labelledby="r-termo">
-    <h2 class="alla" id="r-termo">Arbetsgång: termokemi</h2>
+    <h2 class="k05" id="r-termo">Arbetsgång: termokemi <span class="kurs">KE05</span></h2>
     <div class="kort">
       <ol>
         <li>Börja alltid med tecknet. En exoterm reaktion frigör värme och har negativt &Delta;H, en endoterm reaktion tar upp värme och har positivt &Delta;H. Kontrollera att ditt slutsvar har rätt tecken.</li>
@@ -179,7 +261,7 @@
   </section>
 
   <section aria-labelledby="r-ph">
-    <h2 class="alla" id="r-ph">Arbetsgång: pH</h2>
+    <h2 class="k06" id="r-ph">Arbetsgång: pH <span class="kurs">KE06</span></h2>
     <div class="kort">
       <ol>
         <li><b>Stark syra:</b> syran protolyseras fullständigt, så oxoniumjonkoncentrationen är lika med syrans koncentration (för en tvåprotonig stark syra dubbelt så stor). Räkna pH som den negativa tiologaritmen av oxoniumjonkoncentrationen.</li>
@@ -194,7 +276,7 @@
   </section>
 
   <section aria-labelledby="r-fel">
-    <h2 class="alla" id="r-fel">Vanliga fällor</h2>
+    <h2 class="alla" id="r-fel">Vanliga fällor <span class="kurs">Alla kurser</span></h2>
     <div class="kort">
       <ul>
         <li>Att blanda ihop <b>koefficient</b> (talet framför formeln) med <b>index</b> (den lilla siffran i formeln). Koefficienten får du ändra, indexet aldrig.</li>
@@ -214,5 +296,40 @@
 
   <footer>Metoderna följer samma konventioner som tränarna. Formler och värden: Mafys tabeller.</footer>
 </div>
+<button class="felknapp" id="felBtn">Hittade du ett fel?</button>
+<div class="felpanel" id="felPanel" hidden>
+  <h3>Rapportera ett fel</h3>
+  <textarea id="felText" placeholder="Beskriv felet: vad gäller det och var på sidan?"></textarea>
+  <div class="felmeta" id="felMeta"></div>
+  <div class="felrad">
+    <button class="fel-primar" id="felSkicka">Skicka via e-post</button>
+    <button class="fel-ghost" id="felKopiera">Kopiera rapporten</button>
+  </div>
+  <div class="felok" id="felOk"></div>
+</div>
+<script>
+(function(){
+const FELMAIL='kauremaa.aleksi@gmail.com';
+const $=id=>document.getElementById(id);
+function report(){
+  return 'Sida: '+document.title+'\nAdress: '+location.href+
+    '\nTid: '+new Date().toLocaleString('sv-FI')+'\nWebbläsare: '+navigator.userAgent;
+}
+$('felBtn').onclick=()=>{
+  const p=$('felPanel'); p.hidden=!p.hidden;
+  if(!p.hidden){ $('felMeta').textContent=report(); $('felOk').style.display='none'; }
+};
+$('felSkicka').onclick=()=>{
+  const body=($('felText').value||'(ingen beskrivning)')+'\n\n--- Automatisk information ---\n'+report();
+  location.href='mailto:'+FELMAIL+'?subject='+encodeURIComponent('Felrapport: '+document.title)+'&body='+encodeURIComponent(body);
+};
+$('felKopiera').onclick=async()=>{
+  const t=($('felText').value||'(ingen beskrivning)')+'\n\n--- Automatisk information ---\n'+report();
+  try{ await navigator.clipboard.writeText(t); $('felOk').textContent='Kopierad! Klistra in i Wilma eller e-post.'; }
+  catch(e){ $('felOk').textContent='Kopiering blockerades. Markera texten ovan och kopiera manuellt.'; }
+  $('felOk').style.display='block';
+};
+})();
+</script>
 </body>
 </html>

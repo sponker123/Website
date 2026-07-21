@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#976299">
+<meta name="description" content="Interaktiva kemitränare för gymnasiets KE01-KE06 (GLP2019). Räkna, namnge och balansera med direkt feedback och fullständiga lösningar.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%2326241F' stroke-width='7' stroke-linecap='round'%3E%3Cline x1='14' y1='40' x2='37' y2='59'/%3E%3Cline x1='37' y1='59' x2='62' y2='40'/%3E%3Cline x1='62' y1='40' x2='87' y2='59'/%3E%3C/g%3E%3Ccircle cx='14' cy='40' r='13.5' fill='%231B9E6E'/%3E%3Ccircle cx='37' cy='59' r='13' fill='%23D9502B'/%3E%3Ccircle cx='62' cy='40' r='13' fill='%23E9A83C'/%3E%3Ccircle cx='87' cy='59' r='12' fill='%23D28FC4'/%3E%3C/svg%3E">
+
+<meta name="theme-color" content="#1F7A38">
 <title>Kemiverktyg · gymnasiekemi GLP2019</title>
-<meta name="description" content="Interaktiva räknetränare och formelsamling för gymnasiekemi: KE01 Moltränaren och KE04 Stökiometritränaren.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%97%EF%B8%8F%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -15,27 +16,43 @@
     --ink:#17241E; --soft:#4C5B53;
     --ke01:#E22A36; --ke01-soft:#F7E3E5; --ke01-hover:#C31B25;
     --ke03:#008762; --ke03-soft:#E1F4EE; --ke03-hover:#005A41;
-    --ke04:#976299; --ke04-soft:#F1E9F1; --ke04-hover:#7C507D;
-    --ke05:#8F6D00; --ke05-soft:#F7F1DE; --ke05-hover:#6F5500;
-    --ke06:#4B41A6; --ke06-soft:#E9E7F7; --ke06-hover:#372F82;
+    --ke04:#1F7A38; --ke04-soft:#E3F4E5; --ke04-hover:#155C2A;
+    --ke05:#976299; --ke05-soft:#F1E9F1; --ke05-hover:#7C507D;
+    --ke06:#8F6D00; --ke06-soft:#F7F1DE; --ke06-hover:#6F5500;
     --neutral:#8A968E; --card:#FFFFFF; --linje:#CFDAD2; --varning:#B25A0B;
     --mono:'JetBrains Mono',ui-monospace,monospace;
     --head:'Poppins',system-ui,sans-serif;
     --sans:'Inter',system-ui,sans-serif;
   }
-  h1,h2,h3{font-family:var(--head)}
-  @media (prefers-color-scheme: dark){
-    :root{
-      --paper:#131B17; --grid:#1B241F; --grid-major:#222E27;
-      --ink:#E8EEEA; --soft:#9FB0A6;
-      --ke01:#D37379; --ke01-soft:#2D1617; --ke01-hover:#E1989D;
-      --ke03:#73D3B9; --ke03-soft:#162D26; --ke03-hover:#98E1CD;
-      --ke04:#C990CB; --ke04-soft:#2A172B; --ke04-hover:#DAADDC;
-      --ke05:#D3B173; --ke05-soft:#2D2516; --ke05-hover:#E1C898;
-      --ke06:#9B92E6; --ke06-soft:#1F1C33; --ke06-hover:#B2AAEF;
-      --neutral:#6E7D74; --card:#1A231E; --linje:#2C3A32;
-    }
+  html[data-tema="mork"]{
+    --paper:#1B1E17;
+    --grid:#202A22;
+    --grid-major:#27322A;
+    --ink:#E0EBE6;
+    --soft:#A1B0A8;
+    --ke01:#E22834;
+    --ke01-soft:#43191D;
+    --ke01-hover:#E7555D;
+    --ke03:#0AFFBC;
+    --ke03-soft:#194336;
+    --ke03-hover:#3DFFC9;
+    --ke04:#3CCD64;
+    --ke04-soft:#1A421F;
+    --ke04-hover:#61DB85;
+    --ke05:#9D6A9F;
+    --ke05-soft:#3C203C;
+    --ke05-hover:#B289B3;
+    --ke06:#FFC50A;
+    --ke06-soft:#433919;
+    --ke06-hover:#FFD23D;
+    --neutral:#939F97;
+    --card:#222222;
+    --linje:#3C4E41;
+    --varning:#F49948;
   }
+
+  h1,h2,h3{font-family:var(--head)}
+  
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{
@@ -132,9 +149,7 @@
   .ke06 a.knapp{background:var(--ke06)}
   .ke06 a.knapp:hover{background:var(--ke06-hover)}
   .ke04 a.knapp{background:var(--ke04)} .ke04 a.knapp:hover{background:var(--ke04-hover)}
-  @media (prefers-color-scheme: dark){
-    a.knapp{color:#0E1512}
-  }
+  
   a.knapp:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 
   .resurs{
@@ -152,9 +167,9 @@
   a.knapp-sekundar:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 
   .b-jon{background:#E22A36} .b-jon:hover{background:#C31B25}
-  .b-stok{background:#976299} .b-stok:hover{background:#7C507D}
-  .b-gas{background:#976299} .b-gas:hover{background:#7C507D}
-  .b-bal{background:#976299} .b-bal:hover{background:#7C507D}
+  .b-stok{background:#1F7A38} .b-stok:hover{background:#155C2A}
+  .b-gas{background:#1F7A38} .b-gas:hover{background:#155C2A}
+  .b-bal{background:#1F7A38} .b-bal:hover{background:#155C2A}
   .b-stok,.b-gas,.b-bal,.b-jon{color:#fff}
   .verktygsrad.delad{border-top:1px solid var(--linje);margin-top:14px;padding-top:14px}
 
@@ -226,9 +241,42 @@
     .kurs:hover{transform:none}
     .molekyl svg{animation:none}
   }
+
+  .temaknapp{position:fixed;top:14px;right:14px;z-index:60;width:40px;height:40px;
+    border-radius:50%;border:1.5px solid var(--line,var(--linje,#888));
+    background:var(--card,#fff);color:var(--ink,#222);cursor:pointer;font-size:17px;
+    line-height:1;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.18);padding:0}
+  .temaknapp:hover{transform:scale(1.07)}
+  @media print{.temaknapp{display:none!important}}
 </style>
+<script data-tema-init>
+(function(){
+  var rot=document.documentElement;
+  if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+    rot.dataset.tema='mork';
+  }
+  function uppdatera(btn){
+    var mork=rot.dataset.tema==='mork';
+    btn.textContent = mork ? '\u2600\uFE0F' : '\uD83C\uDF19';
+    btn.setAttribute('aria-label', mork ? 'Byt till ljust l\u00e4ge' : 'Byt till m\u00f6rkt l\u00e4ge');
+    btn.title = mork ? 'Byt till ljust l\u00e4ge' : 'Byt till m\u00f6rkt l\u00e4ge';
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('temaBtn');
+    if(!btn) return;
+    uppdatera(btn);
+    btn.onclick=function(){
+      if(rot.dataset.tema==='mork') delete rot.dataset.tema;
+      else rot.dataset.tema='mork';
+      uppdatera(btn);
+    };
+  });
+})();
+</script>
 </head>
 <body>
+<button class="temaknapp" id="temaBtn" type="button">🌙</button>
 <div class="wrap">
   <header>
     <div class="molekyl" aria-hidden="true">
@@ -249,8 +297,8 @@
   <section class="om" id="om" aria-labelledby="om-rubrik">
     <h2 class="sektionsrubrik" id="om-rubrik">Om mig</h2>
     <div class="om-kort kort-bas">
-      <p>Jag heter Aleksi Kauremaa och undervisar alla kemikurser i gymnasiet, samt matematik. Den här sidan samlar mina träningsverktyg för kemin (matematiken får kanske sina egna längre fram). Verktygen är tänkta som träning inför prov och repetition hemma. Räkna helst först med papper och penna, och använd sedan verktyget för att kontrollera ditt svar och se lösningen steg för steg.</p>
-      <p class="kontakt">Aleksi Kauremaa &middot; kauremaa.aleksi@gmail.com</p>
+      <p>Jag heter James Cooker och undervisar alla kemikurser i gymnasiet, samt matematik. Den här sidan samlar mina träningsverktyg för kemin (matematiken får kanske sina egna längre fram). Verktygen är tänkta som träning inför prov och repetition hemma. Räkna helst först med papper och penna, och använd sedan verktyget för att kontrollera ditt svar och se lösningen steg för steg.</p>
+      <p class="kontakt">James Cooker &middot; kauremaa.aleksi@gmail.com</p>
     </div>
   </section>
 

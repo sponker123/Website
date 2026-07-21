@@ -3,19 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Träna att balansera reaktionsformler med minsta möjliga heltalskoefficienter och atomräkningstabell. KE04.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%2326241F' stroke-width='7' stroke-linecap='round'%3E%3Cline x1='14' y1='40' x2='37' y2='59'/%3E%3Cline x1='37' y1='59' x2='62' y2='40'/%3E%3Cline x1='62' y1='40' x2='87' y2='59'/%3E%3C/g%3E%3Ccircle cx='14' cy='40' r='13.5' fill='%231B9E6E'/%3E%3Ccircle cx='37' cy='59' r='13' fill='%23D9502B'/%3E%3Ccircle cx='62' cy='40' r='13' fill='%23E9A83C'/%3E%3Ccircle cx='87' cy='59' r='12' fill='%23D28FC4'/%3E%3C/svg%3E">
+
 <title>Balanseringstränaren · KE04</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#FBF5FB;
-    --grid:#F1E0F2;
-    --grid-major:#E9D0EA;
-    --ink:#2D162E;
-    --ink-soft:#6A476B;
-    --accent:#976299;
-    --accent-hover:#7C507D;
-    --accent-soft:#F1E9F1;
+    --paper:#F4FBF4;
+    --grid:#DFF2DF;
+    --grid-major:#CFEACF;
+    --ink:#152A16;
+    --ink-soft:#4A6B4C;
+    --accent:#1F7A38;
+    --accent-hover:#155C2A;
+    --accent-soft:#E3F4E5;
     --green:#1D7A33;
     --green-soft:#E4F3E6;
     --amber:#B2590B;
@@ -23,12 +26,31 @@
     --red:#A8332C;
     --red-soft:#F8E7E5;
     --card:#FFFFFF;
-    --line:#DFC6E0;
+    --line:#C6E0C7;
     --radius:10px;
     --mono:'JetBrains Mono',ui-monospace,monospace;
     --head:'Poppins',system-ui,sans-serif;
     --sans:'Inter',system-ui,sans-serif;
   }
+  html[data-tema="mork"]{
+    --paper:#142114;
+    --grid:#1B2F1B;
+    --grid-major:#203920;
+    --ink:#E0EBE0;
+    --ink-soft:#98B89A;
+    --accent:#3CCD64;
+    --accent-hover:#61DB85;
+    --accent-soft:#1A421F;
+    --green:#5AD878;
+    --green-soft:#1C4021;
+    --amber:#F49848;
+    --amber-soft:#433019;
+    --red:#DD837E;
+    --red-soft:#431E19;
+    --card:#222222;
+    --line:#315932;
+  }
+
   h1,h2,h3{font-family:var(--head)}
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
@@ -181,9 +203,42 @@
     th,td{padding:6px 10px}
   }
   @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+
+  .temaknapp{position:fixed;top:14px;right:14px;z-index:60;width:40px;height:40px;
+    border-radius:50%;border:1.5px solid var(--line,var(--linje,#888));
+    background:var(--card,#fff);color:var(--ink,#222);cursor:pointer;font-size:17px;
+    line-height:1;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.18);padding:0}
+  .temaknapp:hover{transform:scale(1.07)}
+  @media print{.temaknapp{display:none!important}}
 </style>
+<script data-tema-init>
+(function(){
+  var rot=document.documentElement;
+  if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+    rot.dataset.tema='mork';
+  }
+  function uppdatera(btn){
+    var mork=rot.dataset.tema==='mork';
+    btn.textContent = mork ? '\u2600\uFE0F' : '\uD83C\uDF19';
+    btn.setAttribute('aria-label', mork ? 'Byt till ljust l\u00e4ge' : 'Byt till m\u00f6rkt l\u00e4ge');
+    btn.title = mork ? 'Byt till ljust l\u00e4ge' : 'Byt till m\u00f6rkt l\u00e4ge';
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('temaBtn');
+    if(!btn) return;
+    uppdatera(btn);
+    btn.onclick=function(){
+      if(rot.dataset.tema==='mork') delete rot.dataset.tema;
+      else rot.dataset.tema='mork';
+      uppdatera(btn);
+    };
+  });
+})();
+</script>
 </head>
 <body>
+<button class="temaknapp" id="temaBtn" type="button">🌙</button>
 <div class="wrap">
   <a class="hem" href="index.html">&#8592; Startsidan</a>
   <header>
@@ -203,6 +258,7 @@
         <div class="scorebar">
           <span>Rätt: <b id="scoreOk">0</b> / <b id="scoreTot">0</b></span>
           <span class="streak" id="streak"></span>
+      <button class="btn-ghost" id="statResetBtn" style="margin-left:auto;font-size:12px;padding:6px 10px" title="Nollställ statistiken för passet">Nollställ statistik</button>
         </div>
       </div>
     </div>
@@ -222,7 +278,7 @@
       <button class="btn-primary" id="backBtn" style="display:none">&#8592; Fortsätt träna</button>
     </div>
 
-    <div class="feedback" id="feedback" role="status"></div>
+    <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
   </div>
 
   <div class="panel" id="histPanel" style="display:none">
@@ -496,6 +552,8 @@ function newProblem(){
   $('resetBtn').style.display='inline-block';
   $('nextBtn').style.display='inline-block';
   $('backBtn').style.display='none';
+  const forsta=document.querySelector('input.koef');
+  if(forsta) forsta.focus();
 }
 
 function ensureEntry(){
@@ -620,6 +678,7 @@ $('checkBtn').onclick=check;
 $('solBtn').onclick=reveal;
 $('resetBtn').onclick=reset;
 $('nextBtn').onclick=newProblem;
+$('statResetBtn').onclick=()=>{ score.ok=0; score.tot=0; score.streak=0; updateScore(); };
 $('backBtn').onclick=closeReview;
 
 window.__felContext=()=>rx?{

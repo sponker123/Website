@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Guide till namngivning av organiska föreningar: steg för steg med bilder, alla ämnesklasser, funktionella grupper, prefix och ändelser. KE03.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%2326241F' stroke-width='7' stroke-linecap='round'%3E%3Cline x1='14' y1='40' x2='37' y2='59'/%3E%3Cline x1='37' y1='59' x2='62' y2='40'/%3E%3Cline x1='62' y1='40' x2='87' y2='59'/%3E%3C/g%3E%3Ccircle cx='14' cy='40' r='13.5' fill='%231B9E6E'/%3E%3Ccircle cx='37' cy='59' r='13' fill='%23D9502B'/%3E%3Ccircle cx='62' cy='40' r='13' fill='%23E9A83C'/%3E%3Ccircle cx='87' cy='59' r='12' fill='%23D28FC4'/%3E%3C/svg%3E">
+
 <title>Namngivningsguiden · KE03</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,6 +32,25 @@
     --head:'Poppins',system-ui,sans-serif;
     --sans:'Inter',system-ui,sans-serif;
   }
+  html[data-tema="mork"]{
+    --paper:#14211D;
+    --grid:#1B2F2A;
+    --grid-major:#203932;
+    --ink:#E0EBE8;
+    --ink-soft:#97BAB0;
+    --accent:#0AFFBC;
+    --accent-hover:#3DFFC9;
+    --accent-soft:#194336;
+    --green:#5AD878;
+    --green-soft:#1C4021;
+    --amber:#F49848;
+    --amber-soft:#433019;
+    --red:#DD837E;
+    --red-soft:#431E19;
+    --card:#222222;
+    --line:#31594E;
+  }
+
   h1,h2,h3{font-family:var(--head)}
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
@@ -210,9 +232,42 @@
     .panel{padding:13px}
   }
   @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+
+  .temaknapp{position:fixed;top:14px;right:14px;z-index:60;width:40px;height:40px;
+    border-radius:50%;border:1.5px solid var(--line,var(--linje,#888));
+    background:var(--card,#fff);color:var(--ink,#222);cursor:pointer;font-size:17px;
+    line-height:1;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.18);padding:0}
+  .temaknapp:hover{transform:scale(1.07)}
+  @media print{.temaknapp{display:none!important}}
 </style>
+<script data-tema-init>
+(function(){
+  var rot=document.documentElement;
+  if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+    rot.dataset.tema='mork';
+  }
+  function uppdatera(btn){
+    var mork=rot.dataset.tema==='mork';
+    btn.textContent = mork ? '\u2600\uFE0F' : '\uD83C\uDF19';
+    btn.setAttribute('aria-label', mork ? 'Byt till ljust l\u00e4ge' : 'Byt till m\u00f6rkt l\u00e4ge');
+    btn.title = mork ? 'Byt till ljust l\u00e4ge' : 'Byt till m\u00f6rkt l\u00e4ge';
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('temaBtn');
+    if(!btn) return;
+    uppdatera(btn);
+    btn.onclick=function(){
+      if(rot.dataset.tema==='mork') delete rot.dataset.tema;
+      else rot.dataset.tema='mork';
+      uppdatera(btn);
+    };
+  });
+})();
+</script>
 </head>
 <body>
+<button class="temaknapp" id="temaBtn" type="button">🌙</button>
 <div class="wrap">
   <a class="hem" href="index.html">&#8592; Startsidan</a>
   <header>

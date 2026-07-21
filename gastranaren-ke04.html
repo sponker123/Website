@@ -3,19 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Träna gasberäkningar med allmänna gaslagen och molvolymen, med provsimulering och fullständiga lösningar. KE04.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg stroke='%2326241F' stroke-width='7' stroke-linecap='round'%3E%3Cline x1='14' y1='40' x2='37' y2='59'/%3E%3Cline x1='37' y1='59' x2='62' y2='40'/%3E%3Cline x1='62' y1='40' x2='87' y2='59'/%3E%3C/g%3E%3Ccircle cx='14' cy='40' r='13.5' fill='%231B9E6E'/%3E%3Ccircle cx='37' cy='59' r='13' fill='%23D9502B'/%3E%3Ccircle cx='62' cy='40' r='13' fill='%23E9A83C'/%3E%3Ccircle cx='87' cy='59' r='12' fill='%23D28FC4'/%3E%3C/svg%3E">
+
 <title>Gastränaren · KE04</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#FBF5FB;
-    --grid:#F1E0F2;
-    --grid-major:#E9D0EA;
-    --ink:#2D162E;
-    --ink-soft:#6A476B;
-    --accent:#976299;
-    --accent-hover:#7C507D;
-    --accent-soft:#F1E9F1;
+    --paper:#F4FBF4;
+    --grid:#DFF2DF;
+    --grid-major:#CFEACF;
+    --ink:#152A16;
+    --ink-soft:#4A6B4C;
+    --accent:#1F7A38;
+    --accent-hover:#155C2A;
+    --accent-soft:#E3F4E5;
     --amber:#B2590B;
     --amber-soft:#FBEFE0;
     --green:#1D7A33;
@@ -23,12 +26,31 @@
     --red:#A8332C;
     --red-soft:#F8E7E5;
     --card:#FFFFFF;
-    --line:#DFC6E0;
+    --line:#C6E0C7;
     --radius:10px;
     --mono:'JetBrains Mono',ui-monospace,monospace;
     --head:'Poppins',system-ui,sans-serif;
     --sans:'Inter',system-ui,sans-serif;
   }
+  html[data-tema="mork"]{
+    --paper:#142114;
+    --grid:#1B2F1B;
+    --grid-major:#203920;
+    --ink:#E0EBE0;
+    --ink-soft:#98B89A;
+    --accent:#3CCD64;
+    --accent-hover:#61DB85;
+    --accent-soft:#1A421F;
+    --amber:#F49848;
+    --amber-soft:#433019;
+    --green:#5AD878;
+    --green-soft:#1C4021;
+    --red:#DD837E;
+    --red-soft:#431E19;
+    --card:#222222;
+    --line:#315932;
+  }
+
   h1,h2,h3{font-family:var(--head)}
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
@@ -92,7 +114,7 @@
     color:var(--accent);background:var(--accent-soft);
     padding:3px 10px;border-radius:6px;margin-bottom:10px;letter-spacing:.04em;
   }
-  .review-tag{background:#F1E0F2;color:var(--ink-soft)}
+  .review-tag{background:#DFF2DF;color:var(--ink-soft)}
   .qtext{font-size:16px;margin-bottom:8px}
   .qtext b{font-weight:600}
   .qtext sub{font-size:.7em}
@@ -198,9 +220,54 @@
   @media (prefers-reduced-motion: reduce){
     *{transition:none!important}
   }
+
+  .endast-print{display:none}
+  @media print{
+    body{background:#fff!important;background-image:none!important;padding:0}
+    body>*{display:none!important}
+    #printRapport{display:block!important;color:#000;padding:24px;max-width:720px}
+    #printRapport h1{font-size:20px;margin-bottom:4px}
+    #printRapport .pr-meta{font-size:13px;margin-bottom:14px}
+    #printRapport .pr-namn{font-size:14px;margin-bottom:14px}
+    #printRapport .pr-res{font-size:15px;margin-bottom:10px}
+    #printRapport ol{padding-left:22px;font-size:14px;line-height:1.9}
+  }
+
+  .temaknapp{position:fixed;top:14px;right:14px;z-index:60;width:40px;height:40px;
+    border-radius:50%;border:1.5px solid var(--line,var(--linje,#888));
+    background:var(--card,#fff);color:var(--ink,#222);cursor:pointer;font-size:17px;
+    line-height:1;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.18);padding:0}
+  .temaknapp:hover{transform:scale(1.07)}
+  @media print{.temaknapp{display:none!important}}
 </style>
+<script data-tema-init>
+(function(){
+  var rot=document.documentElement;
+  if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches){
+    rot.dataset.tema='mork';
+  }
+  function uppdatera(btn){
+    var mork=rot.dataset.tema==='mork';
+    btn.textContent = mork ? '\u2600\uFE0F' : '\uD83C\uDF19';
+    btn.setAttribute('aria-label', mork ? 'Byt till ljust l\u00e4ge' : 'Byt till m\u00f6rkt l\u00e4ge');
+    btn.title = mork ? 'Byt till ljust l\u00e4ge' : 'Byt till m\u00f6rkt l\u00e4ge';
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('temaBtn');
+    if(!btn) return;
+    uppdatera(btn);
+    btn.onclick=function(){
+      if(rot.dataset.tema==='mork') delete rot.dataset.tema;
+      else rot.dataset.tema='mork';
+      uppdatera(btn);
+    };
+  });
+})();
+</script>
 </head>
 <body>
+<button class="temaknapp" id="temaBtn" type="button">🌙</button>
 <div class="wrap">
   <a class="hem" href="index.html">&#8592; Startsidan</a>
   <header>
@@ -228,6 +295,7 @@
       <span class="streak" id="streak"></span>
       <span class="provinfo" id="provInfo"></span>
       <button class="btn-ghost" id="provBtn" style="margin-left:auto;font-size:13px;padding:8px 14px">Provsimulering: 5 uppgifter</button>
+      <button class="btn-ghost" id="statResetBtn" style="font-size:12px;padding:6px 10px" title="Nollställ statistiken för passet">Nollställ statistik</button>
     </div>
   </div>
 
@@ -248,7 +316,7 @@
     </div>
     <div class="hint" id="sciHint">Tips: skriv tiopotenser som <b>3,01e23</b> eller <b>3,01*10^23</b></div>
 
-    <div class="feedback" id="feedback" role="status"></div>
+    <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
 
     <div class="solution" id="solution">
       <div class="sol-head">Lösning steg för steg</div>
@@ -942,6 +1010,21 @@ function updateScore(){
   $('streak').textContent = score.streak>=2 ? `🔥 ${score.streak} i rad` : '';
 }
 
+
+function byggProvrapport(items, ratt, tidStr, facitFn){
+  const esc=x=>String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const d=new Date();
+  const datum=d.toLocaleDateString('sv-FI')+' kl. '+d.toLocaleTimeString('sv-FI',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('printRapport').innerHTML=
+    '<h1>'+esc(document.title)+'</h1>'+
+    '<p class="pr-meta">Provsimulering \u00b7 '+datum+'</p>'+
+    '<p class="pr-namn">Namn: ________________________________</p>'+
+    '<p class="pr-res">Resultat: <b>'+ratt+'/'+items.length+' r\u00e4tt</b> p\u00e5 '+tidStr+'</p>'+
+    '<ol>'+items.map(it=>'<li>'+(it.korrekt?'\u2713 r\u00e4tt':'\u2717 fel')+
+      ' \u00b7 ditt svar: '+esc(it.raw||'(tomt)')+
+      ' \u00b7 r\u00e4tt svar: '+facitFn(it)+'</li>').join('')+'</ol>';
+}
+
 let prov=null;
 
 function provToggle(){
@@ -987,6 +1070,7 @@ function provSummary(){
   });
   provEnd();
   renderHistory();
+  byggProvrapport(items, ratt, min+' min '+ss+' s', it=>fmtSig(it.problem.answer,it.problem.sf)+' '+it.problem.unit);
   const rows=items.map((it,i)=>
     (i+1)+'. '+(it.korrekt?'✓':'✗')+' ditt svar: '+(it.raw||'(tomt)')+
     ' · rätt: '+fmtSig(it.problem.answer,it.problem.sf)+' '+it.problem.unit
@@ -994,7 +1078,7 @@ function provSummary(){
   const fb=$('feedback');
   fb.className='feedback '+(ratt>=4?'ok':(ratt>=2?'warn':'fel'));
   fb.innerHTML='<b>Provsimulering klar: '+ratt+'/5 rätt på '+min+' min '+ss+' s.</b><br>'+rows+
-    '<br>Öppna uppgifterna i historiken för fullständiga lösningar.';
+    '<br>Öppna uppgifterna i historiken för fullständiga lösningar.'+' <button class="btn-ghost" style="margin-top:8px;font-size:13px;padding:7px 12px" onclick="window.print()">Spara som PDF</button>';
 }
 
 $('checkBtn').onclick=check;
@@ -1002,6 +1086,7 @@ $('answer').addEventListener('keydown',e=>{ if(e.key==='Enter') check(); });
 $('solBtn').onclick=reveal;
 $('stepBtn').onclick=showStep;
 $('nextBtn').onclick=newProblem;
+$('statResetBtn').onclick=()=>{ score.ok=0; score.tot=0; score.streak=0; updateScore(); };
 $('backBtn').onclick=closeReview;
 $('provBtn').onclick=provToggle;
 
@@ -1014,6 +1099,7 @@ window.__felContext=()=>problem?{
 newProblem();
 }
 </script>
+<div id="printRapport" class="endast-print" aria-hidden="true"></div>
 <button class="felknapp" id="felBtn">Hittade du ett fel?</button>
 <div class="felpanel" id="felPanel" hidden>
   <h3>Rapportera ett fel</h3>
