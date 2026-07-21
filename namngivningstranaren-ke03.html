@@ -173,7 +173,7 @@
   <header>
     <div class="eyebrow">KE03 · Molekyler och modeller · GLP2019</div>
     <h1>Namngivningstränaren</h1>
-    <div class="sub">Namnge organiska föreningar ur strukturen och skriv strukturformler ur namnet, från alkaner till estrar och aminer. Lokanterna ska alltid bli så låga som möjligt.</div>
+    <div class="sub">Namnge organiska föreningar ur strukturen och skriv strukturformler ur namnet, från alkaner till amider, nitroföreningar och aromater. Lokanterna ska alltid bli så låga som möjligt.</div>
   </header>
 
   <div class="panel">
@@ -247,8 +247,8 @@
 const STAM=['','metan','etan','propan','butan','pentan','hexan','heptan','oktan'];
 const ALKYL=['','metyl','etyl','propyl','butyl','pentyl'];
 const HALNAMN={F:'fluor',Cl:'klor',Br:'brom',I:'jod'};
-const GTXT={OH:'OH',NH2:'NH2',CH3:'CH3',C2H5:'CH2CH3'};
-const MIR={OH:'HO',NH2:'H2N'};
+const GTXT={OH:'OH',NH2:'NH2',CH3:'CH3',C2H5:'CH2CH3',NO2:'NO2'};
+const MIR={OH:'HO',NH2:'H2N',NO2:'O2N'};
 const HALS=['F','Cl','Br','I'];
 
 /* --- struktur: c = kedjans atomer, b = bindningsordningar,
@@ -310,7 +310,7 @@ function buildCond(st, rev, symbols){
         out += 'C'+hp+(carbonyl?'O':'')+halStr;
         others.forEach(g=>{
           const t=GTXT[g];
-          const direct=(i===n-1)&&(g==='OH'||g==='NH2');
+          const direct=(i===n-1)&&(g==='OH'||g==='NH2'||g==='NO2');
           out += direct ? t : '('+t+')';
         });
       }
@@ -378,14 +378,15 @@ function compEqual(a,b){
 /* ================================================================
    ÄMNESBANKEN
    ================================================================ */
-const GRUPPMAP={alkan:'kolv',alken:'kolv',alkyn:'kolv',
-  alkohol:'alko',diol:'alko',triol:'alko',eter:'alko',
-  aldehyd:'karb',keton:'karb',syra:'syra',ester:'syra',
-  amin:'amha',halogen:'amha'};
+const GRUPPMAP={alkan:'kolv',alken:'kolv',alkyn:'kolv',aromat:'kolv',
+  alkohol:'alko',diol:'alko',triol:'alko',eter:'alko',fenol:'alko',
+  aldehyd:'karb',keton:'karb',syra:'syra',ester:'syra',amid:'syra',
+  amin:'amha',halogen:'amha',nitro:'amha'};
 const KLASSNAMN={alkan:'alkan',alken:'alken',alkyn:'alkyn',alkohol:'alkohol',
   diol:'diol (tvåvärd alkohol)',triol:'triol (trevärd alkohol)',eter:'eter',
   aldehyd:'aldehyd',keton:'keton',syra:'karboxylsyra',ester:'ester',
-  amin:'amin',halogen:'halogenalkan'};
+  amin:'amin',halogen:'halogenalkan',
+  aromat:'aromatisk förening',fenol:'fenol',amid:'amid',nitro:'nitroförening'};
 
 /* [id, klass, diff, namn, st, extra]
    extra: alt (helt rätta namn), warn ([namn, skäl]), xf (extra formler),
@@ -495,7 +496,28 @@ const RAW=[
 ['dimetylamin','amin','svar','dimetylamin',{c:'CNC'}],
 ['triklormetan','halogen','svar','triklormetan',{c:'C',s:[[1,'Cl'],[1,'Cl'],[1,'Cl']]},{warn:[['kloroform','trivial']]}],
 ['brommetylpropan','halogen','svar','2-brom-2-metylpropan',{c:'CCC',s:[[2,'Br'],[2,'CH3']]},{fx:{d:'CH3CBr(CH3)CH3',a:['CH3CBr(CH3)CH3','CH3C(CH3)BrCH3','(CH3)3CBr','C(CH3)3Br','BrC(CH3)3']}}],
-['klormetylbutan','halogen','svar','2-klor-3-metylbutan',{c:'CCCC',s:[[2,'Cl'],[3,'CH3']]},{warn:[['3-klor-2-metylbutan','riktning']]}]
+['klormetylbutan','halogen','svar','2-klor-3-metylbutan',{c:'CCCC',s:[[2,'Cl'],[3,'CH3']]},{warn:[['3-klor-2-metylbutan','riktning']]}],
+/* ------ AMIDER ------ */
+['metanamid','amid','latt','metanamid',{c:'C',s:[[1,'=O'],[1,'NH2']]},{warn:[['formamid','trivial']],fx:{d:'HCONH2',a:['HCONH2','H2NCHO','NH2CHO','H2NOCH']}}],
+['etanamid','amid','latt','etanamid',{c:'CC',s:[[2,'=O'],[2,'NH2']],rev:1},{warn:[['acetamid','trivial']],xf:['H2NCOCH3','NH2COCH3','CH3C(O)NH2']}],
+['propanamid','amid','medel','propanamid',{c:'CCC',s:[[3,'=O'],[3,'NH2']],rev:1},{xf:['H2NCOCH2CH3','NH2COCH2CH3']}],
+['butanamid','amid','medel','butanamid',{c:'CCCC',s:[[4,'=O'],[4,'NH2']],rev:1},{xf:['H2NCOCH2CH2CH3','NH2COCH2CH2CH3']}],
+['metylpropanamid','amid','svar','2-metylpropanamid',{c:'CCC',s:[[2,'CH3'],[3,'=O'],[3,'NH2']],rev:1},{warn:[['metylpropanamid','lokfri']],xf:['(CH3)2CHCONH2','H2NCOCH(CH3)2','NH2COCH(CH3)2']}],
+['pentanamid','amid','svar','pentanamid',{c:'CCCCC',s:[[5,'=O'],[5,'NH2']],rev:1},{xf:['H2NCOCH2CH2CH2CH3']}],
+/* ------ NITROFÖRENINGAR ------ */
+['nitrometan','nitro','latt','nitrometan',{c:'C',s:[[1,'NO2']]}],
+['nitroetan','nitro','latt','nitroetan',{c:'CC',s:[[2,'NO2']],rev:1},{warn:[['1-nitroetan','onodig']],xf:['NO2CH2CH3']}],
+['nitropropan1','nitro','medel','1-nitropropan',{c:'CCC',s:[[3,'NO2']],rev:1},{warn:[['3-nitropropan','riktning']],xf:['NO2CH2CH2CH3']}],
+['nitropropan2','nitro','medel','2-nitropropan',{c:'CCC',s:[[2,'NO2']]},{xf:['(CH3)2CHNO2','O2NCH(CH3)2']}],
+['nitrobutan2','nitro','svar','2-nitrobutan',{c:'CCCC',s:[[2,'NO2']]},{warn:[['3-nitrobutan','riktning']]}],
+['nitropentan3','nitro','svar','3-nitropentan',{c:'CCCCC',s:[[3,'NO2']]}],
+/* ------ AROMATER (etablerade namn, visas som kondenserad formel) ------ */
+['bensen','aromat','latt','bensen',{c:'C'},{txt:1,fx:{d:'C6H6',a:['C6H6']}}],
+['toluen','aromat','medel','toluen',{c:'C'},{txt:1,alt:['metylbensen'],fx:{d:'C6H5CH3',a:['C6H5CH3','CH3C6H5','C6H5(CH3)']}}],
+['etylbensen','aromat','svar','etylbensen',{c:'C'},{txt:1,fx:{d:'C6H5CH2CH3',a:['C6H5CH2CH3','CH3CH2C6H5','C6H5(C2H5)']}}],
+['nitrobensen','aromat','svar','nitrobensen',{c:'C'},{txt:1,fx:{d:'C6H5NO2',a:['C6H5NO2','O2NC6H5','NO2C6H5','C6H5(NO2)']}}],
+/* ------ FENOL ------ */
+['fenol','fenol','medel','fenol',{c:'C'},{txt:1,alt:['hydroxibensen'],warn:[['karbolsyra','trivial']],fx:{d:'C6H5OH',a:['C6H5OH','HOC6H5','C6H5(OH)']}}]
 ];
 
 /* --- bearbeta banken --- */
@@ -512,7 +534,7 @@ function etylVarianter(set){
 const BANK=RAW.map(row=>{
   const [id,klass,diff,namn,st] = row;
   const o=row[5]||{};
-  const c={id,klass,diff,namn,st,alt:o.alt||[],warn:o.warn||[],xf:o.xf||[],fx:o.fx||null};
+  const c={id,klass,diff,namn,st,alt:o.alt||[],warn:o.warn||[],xf:o.xf||[],fx:o.fx||null,txt:o.txt||0};
   /* formler */
   const fwd=buildCond(st,false,false), rev=buildCond(st,true,false);
   c.plain = c.fx ? c.fx.d : buildCond(st,false,true);
@@ -609,7 +631,7 @@ function makeProblem(mode, diff, grupp){
   recent.push(c.id);
   if(recent.length>8) recent.shift();
   return {mode, c, namn:c.namn, plain:c.plain,
-    viz:(diff==='latt'||c.st.c.length<2)?'text':'svg',
+    viz:(diff==='latt'||c.st.c.length<2||c.txt)?'text':'svg',
     signature:mode+'|'+c.id};
 }
 function generateFresh(type, diff, grupp){
@@ -634,11 +656,11 @@ const TYPES=[
 ];
 const GRUPPER=[
   {id:'alla', label:'Alla'},
-  {id:'kolv', label:'Kolväten'},
-  {id:'alko', label:'Alkoholer &amp; etrar'},
+  {id:'kolv', label:'Kolväten &amp; aromater'},
+  {id:'alko', label:'Alkoholer, etrar &amp; fenoler'},
   {id:'karb', label:'Aldehyder &amp; ketoner'},
-  {id:'syra', label:'Syror &amp; estrar'},
-  {id:'amha', label:'Aminer &amp; halogener'}
+  {id:'syra', label:'Syror, estrar &amp; amider'},
+  {id:'amha', label:'Aminer, halogener &amp; nitro'}
 ];
 const DIFFS=[
   {id:'latt', label:'Lätt'},
@@ -764,6 +786,7 @@ function drawMol(st){
         line(x,y+d*3,x,y+d*20);
         let html=g, len=g.length;
         if(g==='NH2'){ html='NH<tspan dy="3" font-size="10">2</tspan>'; len=3; }
+        else if(g==='NO2'){ html='NO<tspan dy="3" font-size="10">2</tspan>'; len=3; }
         txt(x,y+d*31,html,len);
       }
     });
@@ -841,6 +864,20 @@ function solutionSteps(c){
     return steps;
   }
 
+  if(c.klass==='aromat'){
+    steps.push({text:'Föreningen innehåller en bensenring: den är aromatisk. Aromatiska föreningar namnges med etablerade namn i stället för systematiska ändelser.',
+      math:fSub(c.plain)});
+    steps.push({text:'Identifiera vad som sitter på ringen och använd det etablerade namnet.',
+      math:formelM});
+    return steps;
+  }
+  if(c.klass==='fenol'){
+    steps.push({text:'OH-gruppen sitter direkt på en aromatisk ring: föreningen är en fenol, inte en alkohol.',
+      math:fSub(c.plain)});
+    steps.push({text:'Fenoler namnges med etablerade namn.', math:formelM});
+    return steps;
+  }
+
   steps.push({text:'Räkna kolatomerna i den längsta kedjan. Antalet ger stammen.',
     math:cn+' kolatomer ger stammen '+stam});
 
@@ -879,6 +916,15 @@ function solutionSteps(c){
     steps.push({text:'COOH-gruppen sitter alltid i kedjans ände och är kolatom 1. Ändelsen är -syra och gruppen behöver ingen lokant.',
       math:'COOH = kolatom 1'});
     if(harGrenar) steps.push(grenSteg);
+  } else if(c.klass==='amid'){
+    steps.push({text:'CONH2-gruppen sitter alltid i kedjans ände och är kolatom 1. Ändelsen är -amid och gruppen behöver ingen lokant.',
+      math:'CONH2 = kolatom 1'});
+    if(harGrenar) steps.push(grenSteg);
+  } else if(c.klass==='nitro'){
+    const ps=(c.st.s||[]).filter(s=>s[1]==='NO2').map(s=>ipos(c,s[0])).sort((a,b)=>a-b);
+    steps.push({text:'Nitrogruppen NO2 anges alltid som prefixet nitro- med lokant, aldrig som ändelse. Numrera så att lokanten blir så låg som möjligt.',
+      math:'NO2 på kolatom '+ps.join(' och ')});
+    if(harGrenar) steps.push(grenSteg);
   } else if(c.klass==='amin'){
     const p=ipos(c,c.st.s.find(s=>s[1]==='NH2')[0]);
     steps.push({text:'NH2-gruppen ger ändelsen -amin med lokant. Korta aminer kan också namnges som alkylamin.',
@@ -912,8 +958,11 @@ function renderSteps(p){
 
 /* ---------- rendering ---------- */
 function qTextFor(p){
-  if(p.mode==='namn')
+  if(p.mode==='namn'){
+    if(p.c.klass==='aromat'||p.c.klass==='fenol')
+      return 'Vad heter föreningen nedan? Ange det etablerade namnet.';
     return 'Vad heter föreningen nedan? Ange det systematiska namnet.';
+  }
   return 'Skriv den kondenserade strukturformeln för <b>'+p.namn+'</b>.';
 }
 function renderProblem(p, review){
