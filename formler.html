@@ -39,6 +39,7 @@
     --line:#3D4D41;
     --varning:#F49948;
   }
+  html[data-tema="mork"] h2,html[data-tema="mork"] .stor-knapp,html[data-tema="mork"] .fel-primar{color:var(--paper)}
 
   h1,h2,h3{font-family:var(--head)}
   
@@ -140,6 +141,10 @@
     box-shadow:0 2px 8px rgba(0,0,0,.18);padding:0}
   .temaknapp:hover{transform:scale(1.07)}
   @media print{.temaknapp{display:none!important}}
+  .stor-knapp{display:inline-block;font-weight:600;font-size:15px;text-decoration:none;
+    color:#fff;padding:10px 20px;border-radius:8px}
+  .stor-knapp.k3{background:var(--ke03)}
+  .stor-knapp.k4{background:var(--ke04)}
 </style>
 <script data-tema-init>
 (function(){
@@ -191,7 +196,7 @@
       <h3>Allt du behöver slå upp finns i Mafys tabeller</h3>
       <p style="font-size:14.5px;margin-bottom:10px">Samband, konstanter, atommassor och löslighetstabeller: använd samma tabellverk som på studentexamen, så tränar du på att hitta rätt från början. Gäller räkneuppgifterna: namngivningen i KE03 finns inte i tabellboken, den hittar du i Namngivningsguiden nedan.</p>
       <a href="https://mafytaulukot.fi/" target="_blank" rel="noopener"
-         style="display:inline-block;font-weight:600;font-size:15px;text-decoration:none;color:#fff;background:var(--ke04);padding:10px 20px;border-radius:8px">Öppna Mafys tabeller</a>
+         class="stor-knapp k4">Öppna Mafys tabeller</a>
     </div>
   </section>
 
@@ -214,7 +219,7 @@
       <h3>Namngivningen finns inte i tabellboken</h3>
       <p style="font-size:14.5px;margin-bottom:10px">Ämnesklasser, funktionella grupper, prefix, ändelser och arbetsgången steg för steg finns samlade i Namngivningsguiden, med bilder och exempel på tre nivåer.</p>
       <a href="namngivningsguiden-ke03.html"
-         style="display:inline-block;font-weight:600;font-size:15px;text-decoration:none;color:#fff;background:var(--ke03);padding:10px 20px;border-radius:8px">Öppna Namngivningsguiden</a>
+         class="stor-knapp k3">Öppna Namngivningsguiden</a>
     </div>
   </section>
 

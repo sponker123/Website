@@ -50,6 +50,7 @@
     --card:#222222;
     --line:#593134;
   }
+  html[data-tema="mork"] .btn-primary,html[data-tema="mork"] .chip.on{color:var(--paper)}
 
   h1,h2,h3{font-family:var(--head)}
   *{box-sizing:border-box;margin:0;padding:0}
@@ -254,7 +255,7 @@
   <header>
     <div class="eyebrow">KE01/KE02 · Kemi och jag · Kemi och en hållbar framtid · GLP2019</div>
     <h1>Formeltränaren</h1>
-    <div class="sub">Bestäm empirisk formel, molekylformel och antalet kristallvatten. Alla atommassor ges i uppgiften. Decimalkomma eller punkt går lika bra.</div>
+    <div class="sub">Bestäm empirisk formel, molekylformel och antalet kristallvatten. På lätt nivå ges atommassorna i uppgiften, på medel och svår använder du tabellboken. Decimalkomma eller punkt går lika bra.</div>
   </header>
 
   <div class="panel">
@@ -318,7 +319,7 @@
 
   <footer>
     Empiriska formeln anger det minsta heltalsförhållandet mellan atomslagen.<br>
-    Molekylformeln är alltid en heltalsmultipel av den empiriska formeln.
+    Molekylformeln är alltid en heltalsmultipel av den empiriska formeln. Atommassorna hittar du i Mafys tabeller.
   </footer>
 </div>
 
@@ -347,10 +348,10 @@ function parseNum(str){
 
 /* ---------- atommassor (visas alltid i uppgiften) ---------- */
 const ATOM={H:1.008, C:12.01, N:14.01, O:16.00, Na:22.99, Mg:24.31, Al:26.98,
-  Si:28.09, P:30.97, S:32.07, Cl:35.45, K:39.10, Ca:40.08, Cr:52.00,
+  Si:28.09, P:30.97, S:32.06, Cl:35.45, K:39.10, Ca:40.08, Cr:52.00,
   Fe:55.85, Cu:63.55, Zn:65.38, Ba:137.33};
 const ATOMSTR={H:'1,008', C:'12,01', N:'14,01', O:'16,00', Na:'22,99', Mg:'24,31',
-  Al:'26,98', Si:'28,09', P:'30,97', S:'32,07', Cl:'35,45', K:'39,10', Ca:'40,08',
+  Al:'26,98', Si:'28,09', P:'30,97', S:'32,06', Cl:'35,45', K:'39,10', Ca:'40,08',
   Cr:'52,00', Fe:'55,85', Cu:'63,55', Zn:'65,38', Ba:'137,33'};
 const M_H2O=2*ATOM.H+ATOM.O;          /* 18,016 */
 const M_H2O_STR='18,02';
@@ -573,6 +574,11 @@ function byDiff(bank, diff){
 function atommassRad(comp){
   return 'Atommassor (g/mol): '+Object.keys(comp).map(el=>el+' '+ATOMSTR[el]).join(' \u00b7 ');
 }
+/* atommassorna ges bara pa latt niva; pa medel och svar anvands tabellboken */
+function medTabell(given, comp, diff){
+  if(diff==='latt') given.push(atommassRad(comp));
+  return given;
+}
 /* masshalter i procent, avrundade till 3 gällande siffror, som tal + strängar */
 function halter(compObj){
   const M=molmassa(compObj), ut={};
@@ -622,7 +628,7 @@ function genHalt(diff){
   return {mode:'halt', ansType:'formel', facitComp:c, facitStr:sub(e.f), etikett:'Empirisk formel =',
     kort:e.namn, hydrat:false,
     qtext:'En f\u00f6rening ('+e.namn+') har den angivna sammans\u00e4ttningen i massprocent. Best\u00e4m f\u00f6reningens empiriska formel.',
-    given:[ordn.map(el=>el+': <b>'+fmtTal(h[el],3)+'</b> %').join(' \u00b7 '), atommassRad(c)],
+    given:medTabell([ordn.map(el=>el+': <b>'+fmtTal(h[el],3)+'</b> %').join(' \u00b7 ')], c, diff),
     steps, signature:sig,
     dbg:{kind:'halt', halter:h, facit:c}};
 }
@@ -648,9 +654,9 @@ function genMassa(diff){
          'n('+e.ickem+') = '+fmtTal(mIckAnv,4)+' / '+ATOMSTR[e.ickem]+' = '+fmtTal(nVal[e.ickem],4)+' mol'});
   steps.push(...kvotSteg(nVal, c, ordn));
   steps.push({text:'Skriv den empiriska formeln.', math:'Empirisk formel: <b>'+sub(e.f)+'</b>'});
-  const given = badaGivna
-    ? ['m('+e.metall+') = <b>'+fmtTal(mMet,3)+'</b> g', 'm('+e.ickem+') = <b>'+fmtTal(mIck,3)+'</b> g', atommassRad(c)]
-    : ['m('+e.metall+') = <b>'+fmtTal(mMet,3)+'</b> g', 'm(produkt) = <b>'+fmtTal(mProd,3)+'</b> g', atommassRad(c)];
+  const given = medTabell(badaGivna
+    ? ['m('+e.metall+') = <b>'+fmtTal(mMet,3)+'</b> g', 'm('+e.ickem+') = <b>'+fmtTal(mIck,3)+'</b> g']
+    : ['m('+e.metall+') = <b>'+fmtTal(mMet,3)+'</b> g', 'm(produkt) = <b>'+fmtTal(mProd,3)+'</b> g'], c, diff);
   const qtext = badaGivna
     ? 'Ett prov av '+e.prodNamn+' inneh\u00e5ller de angivna massorna '+e.metallNamn+' och '+e.ickemNamn+'. Best\u00e4m f\u00f6reningens empiriska formel.'
     : 'N\u00e4r '+fmtTal(mMet,3)+' g '+e.metallNamn+' reagerar fullst\u00e4ndigt med '+e.ickemNamn+' bildas '+fmtTal(mProd,3)+' g av '+e.prodNamn+'. Best\u00e4m f\u00f6reningens empiriska formel.';
@@ -681,7 +687,7 @@ function genMolekyl(diff){
     return {mode:'molekyl', ansType:'formel', facitComp:cMol, facitStr:sub(e.molF), etikett:'Molekylformel =',
       kort:e.molNamn, hydrat:false,
       qtext:'En f\u00f6rening ('+e.molNamn+') har den empiriska formeln '+sub(e.emp)+'. Best\u00e4m molekylformeln.',
-      given:['Empirisk formel: <b>'+sub(e.emp)+'</b>', 'M(molekyl) = <b>'+fmtTal(Mmol,4)+'</b> g/mol', atommassRad(cEmp)],
+      given:medTabell(['Empirisk formel: <b>'+sub(e.emp)+'</b>', 'M(molekyl) = <b>'+fmtTal(Mmol,4)+'</b> g/mol'], cEmp, diff),
       steps, signature:sig,
       dbg:{kind:'molekyl', emp:cEmp, M:Mmol, facit:cMol, n:e.n}};
   }
@@ -702,8 +708,8 @@ function genMolekyl(diff){
   return {mode:'molekyl', ansType:'formel', facitComp:cMol, facitStr:sub(e.molF), etikett:'Molekylformel =',
     kort:e.molNamn, hydrat:false,
     qtext:'En f\u00f6rening ('+e.molNamn+') har den angivna sammans\u00e4ttningen i massprocent. Best\u00e4m molekylformeln.',
-    given:[ordn.map(el=>el+': <b>'+fmtTal(h[el],3)+'</b> %').join(' \u00b7 '),
-      'M(molekyl) = <b>'+fmtTal(Mmol,4)+'</b> g/mol', atommassRad(cMol)],
+    given:medTabell([ordn.map(el=>el+': <b>'+fmtTal(h[el],3)+'</b> %').join(' \u00b7 '),
+      'M(molekyl) = <b>'+fmtTal(Mmol,4)+'</b> g/mol'], cMol, diff),
     steps, signature:sig,
     dbg:{kind:'molekyl_halt', halter:h, M:Mmol, emp:cEmp, facit:cMol, n:e.n}};
 }
@@ -739,8 +745,7 @@ function genHydrat(diff){
     qtext:'Ett prov av ett hydrat av '+e.saltNamn+' ('+sub(e.saltF)+'\u00b7xH<sub>2</sub>O) v\u00e4ger '+
       fmtTal(mHyd,3)+' g. Efter upphettning, n\u00e4r allt kristallvatten avg\u00e5tt, \u00e5terst\u00e5r '+
       fmtTal(mSalt,3)+' g vattenfritt salt. '+(helForm?'Best\u00e4m hydratets formel.':'Best\u00e4m antalet kristallvatten x.'),
-    given:['m(hydrat) = <b>'+fmtTal(mHyd,3)+'</b> g', 'm(vattenfritt salt) = <b>'+fmtTal(mSalt,3)+'</b> g',
-      atommassRad(cSalt)],
+    given:medTabell(['m(hydrat) = <b>'+fmtTal(mHyd,3)+'</b> g', 'm(vattenfritt salt) = <b>'+fmtTal(mSalt,3)+'</b> g'], cSalt, diff),
     steps, signature:sig,
     dbg:{kind:'hydrat', mHyd, mSalt, salt:cSalt, x:e.x}};
   if(helForm){
