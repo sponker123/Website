@@ -266,7 +266,6 @@
         <div class="scorebar">
           <span>Rätt: <b id="scoreOk">0</b> / <b id="scoreTot">0</b></span>
           <span class="streak" id="streak"></span>
-      <button class="btn-ghost" id="statResetBtn" style="margin-left:auto;font-size:12px;padding:6px 10px" title="Nollställ statistiken för passet">Nollställ statistik</button>
         </div>
       </div>
     </div>
@@ -686,7 +685,6 @@ $('checkBtn').onclick=check;
 $('solBtn').onclick=reveal;
 $('resetBtn').onclick=reset;
 $('nextBtn').onclick=newProblem;
-$('statResetBtn').onclick=()=>{ score.ok=0; score.tot=0; score.streak=0; updateScore(); };
 $('backBtn').onclick=closeReview;
 
 window.__felContext=()=>rx?{

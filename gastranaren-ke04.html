@@ -303,7 +303,6 @@
       <span class="streak" id="streak"></span>
       <span class="provinfo" id="provInfo"></span>
       <button class="btn-ghost" id="provBtn" style="margin-left:auto;font-size:13px;padding:8px 14px">Provsimulering: 5 uppgifter</button>
-      <button class="btn-ghost" id="statResetBtn" style="font-size:12px;padding:6px 10px" title="Nollställ statistiken för passet">Nollställ statistik</button>
     </div>
   </div>
 
@@ -1094,7 +1093,6 @@ $('answer').addEventListener('keydown',e=>{ if(e.key==='Enter') check(); });
 $('solBtn').onclick=reveal;
 $('stepBtn').onclick=showStep;
 $('nextBtn').onclick=newProblem;
-$('statResetBtn').onclick=()=>{ score.ok=0; score.tot=0; score.streak=0; updateScore(); };
 $('backBtn').onclick=closeReview;
 $('provBtn').onclick=provToggle;
 
